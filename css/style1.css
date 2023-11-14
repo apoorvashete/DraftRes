@@ -1,0 +1,19 @@
+.password-wrapper {
+    position: relative;
+}
+
+#password {
+    padding-right: 50px; /* Make room for the eye icon */
+}
+
+#togglePassword {
+    position: absolute;
+    right: 17px; /* Adjust as necessary */
+    top: 40%; /* Center vertically */
+    transform: translateY(-50%); /* Ensure it's centered regardless of the height */
+    cursor: pointer;
+}
+.modal-content {
+    width: 30%; /* or any other value */
+    margin: 0 auto; /* This will center the form if that's also desired */
+}

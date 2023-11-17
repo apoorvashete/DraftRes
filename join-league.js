@@ -7,18 +7,25 @@ sdk.addMessageListener((event) => {
     try {
         // Check if the message data is a string that needs parsing
         const messageData = (typeof event.data.data === 'string') ? JSON.parse(event.data.data) : event.data.data;
+        let matchFound = false;
 
         messageData.forEach(message => {
             if (message.publicKey === leagueId.value) {
-                // Redirect to draft page with the publicKey
+                // Redirect to draft page with the publicKey and mark match as found
                 window.location.href = `draft-page.html?link=${message.publicKey}`;
+                matchFound = true;
             }
         });
+
+        // Show alert if no matching publicKey is found
+        if (!matchFound) {
+            alert("Invalid League Id");
+        }
     } catch (error) {
         console.error("Error parsing message data:", error);
+        alert("Invalid League Id");
     }
 });
-
 
 var teamName = document.getElementById('teamName');
 var joinLeagueBtn = document.getElementById("joinLeagueBtn");

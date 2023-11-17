@@ -1,14 +1,12 @@
 import ResilientSDK from 'https://cdn.resilientdb.com/resilient-sdk.js';
 
 const sdk = new ResilientSDK();
+var league = localStorage.getItem("league");
+var team = localStorage.getItem("team");
+var timePerPick = localStorage.getItem("time");
+var maxMembers = localStorage.getItem("members");
 
 function initializeDraftPage() {
-    var league = localStorage.getItem("league");
-    var team = localStorage.getItem("team");
-    var timePerPick = localStorage.getItem("time");
-    var maxMembers = localStorage.getItem("members");
-
-    
     const numberOfRounds = 12; // Set this to the desired number of rounds
     const draftRoundsElement = document.getElementById('draftRounds');
 
@@ -46,20 +44,35 @@ function createRoundBlock(roundNumber, maxMembers) {
     roundLabel.innerHTML = `<div class="rotate90">Round ${roundNumber}</div>`;
     roundContainer.appendChild(roundLabel);
 
+
+
     // Create player blocks for the round
     for (let i = 1; i <= maxMembers; i++) {
         const playerBlock = document.createElement('div');
         playerBlock.className = 'player-block';
-        playerBlock.innerHTML = `
-            <div class="player-info">${ordinalSuffixOf(i)}</div>
-            <div class="player-initials">XX</div>
-            <div class="player-info">Player ${i}</div>
-        `;
+
+        // Check if it's the first player and use teamName
+        if (i === 1 && team) {
+            console.log("entered if block");
+            playerBlock.innerHTML = `
+                <div class="player-info">${ordinalSuffixOf(i)}</div>
+                <div class="player-initials">XX</div>
+                <div class="player-info">${team}</div>
+            `;
+        } else {
+            console.log("entered else block");
+            playerBlock.innerHTML = `
+                <div class="player-info">${ordinalSuffixOf(i)}</div>
+                <div class="player-initials">XX</div>
+                <div class="player-info">Player ${i}</div>
+            `;
+        }
         roundContainer.appendChild(playerBlock);
     }
 
     return roundContainer;
 }
+
 
 function ordinalSuffixOf(i) {
     var j = i % 10,

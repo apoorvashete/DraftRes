@@ -2,7 +2,7 @@
 <html>
   <head>
     <link rel="stylesheet" type="text/css" class="__meteor-css__" href="https://d3ibm5lrns1d5x.cloudfront.net/a948b5d6d805f940e59d7e9c7c15240c7224aa16.css?meteor_css_resource=true">
-    <title>Draft Fantasy Football - Premier League Fantasy Football (EPL, BPL, FPL Draft &amp; Auction)</title>  
+    <title>DraftRes - Premier League Fantasy Football Draft</title>  
     <link rel="apple-touch-icon" sizes="57x57" href="/icons/apple-icon-57x57.png?v=2">
     <link rel="apple-touch-icon" sizes="60x60" href="/icons/apple-icon-60x60.png?v=2">
     <link rel="apple-touch-icon" sizes="72x72" href="/icons/apple-icon-72x72.png?v=2">
@@ -32,17 +32,10 @@
       </div>
       <div class="modal-body">
         <form role="form" id="joinLeagueForm" action="draft-page.html" method="get">
-              <div class="form-group">
-                  <label for="leagueName">League Name</label>
-                  <input type="text" class="form-control" id="leagueName" name="leagueName" placeholder="Champions League">
-              </div>
-              <div class="form-group">
-                <label for="password">Password</label>
-                <div class="password-wrapper">
-                    <input type="password" class="form-control" name="password" id="password" placeholder="Enter League Password">
-                    <i class="bi bi-eye-slash" id="togglePassword"></i>
-                </div>
-              </div>
+          <div class="form-group">
+            <label for="leagueId">Enter the ID of the league you wish to join</label>
+            <input type="text" class="form-control" name="leagueId" id="leagueId" placeholder="League ID">
+          </div>
               <div class="form-group">
                   <label for="teamName">Team Name</label>
                   <input type="text" class="form-control" name = "teamName" id="teamName" placeholder="Super Team">
@@ -54,42 +47,7 @@
         <button type="submit" class="btn btn-primary" id="joinLeagueBtn">Join league</button>
       </div>
     </div>
-    <script>
-      const togglePassword = document.querySelector('#togglePassword');
-      const password = document.querySelector('#password');
-      togglePassword.addEventListener('click', function (e) {
-          // toggle the type attribute
-          const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-          password.setAttribute('type', type);
-          // toggle the eye / eye slash icon
-          this.classList.toggle('bi-eye');
-      });
-      document.addEventListener('DOMContentLoaded', function() {
-    // Select the form and the button
-    var form = document.getElementById('joinLeagueForm');
-    var button = document.getElementById('joinLeagueBtn');
-
-    // Add an event listener for the 'click' event on the button
-    button.addEventListener('click', function(event) {
-      event.preventDefault(); // Prevent the default form submission
-
-      // Create a new FormData object passing in the form
-      var formData = new FormData(form);
-      var queryParams = new URLSearchParams();
-
-      // Append each field to the queryParams string, except for the password
-      formData.forEach((value, key) => {
-        if (key !== 'password') {
-          queryParams.append(key, value);
-        }
-      });
-
-      // Redirect to draft-page.html with the query parameters
-      window.location.href = `draft-page.html?${queryParams}`;
-    });
-  });
-
-
-    </script>
+    <script src="https://cdn.resilientdb.com/resilient-sdk.js" type="module"></script>
+    <script src="join-league.js" type="module"></script>
   </body>
 </html>

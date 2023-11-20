@@ -9,6 +9,8 @@ var maxMembers = localStorage.getItem("members");
 function initializeDraftPage() {
     const numberOfRounds = 12; // Set this to the desired number of rounds
     const draftRoundsElement = document.getElementById('draftRounds');
+    let currentPlayer = 1; // Start with the first player
+    let currentRound = 1; // Start with the first round
 
     // Create blocks for all rounds
     for (let roundNumber = 1; roundNumber <= numberOfRounds; roundNumber++) {
@@ -16,24 +18,65 @@ function initializeDraftPage() {
         draftRoundsElement.appendChild(roundBlock);
     }
 
-    // Set up the timer
-    let countdownTimer = parseInt(timePerPick, 10); 
-    const countdownElement = document.getElementById('countdown');
-    updateCountdownDisplay(countdownTimer, countdownElement); // Initial display update
+    function highlightCurrentPlayer() {
+        // Reset background color for all player-info elements
+        document.querySelectorAll('.player-block .player-info').forEach(element => {
+            element.style.backgroundColor = ''; // reset to default
+        });
+    
+        // Calculate the index of the player block in the round container
+        let playerBlockIndex = currentPlayer + 1; // +1 due to the round label being the first child
+    
+        // Highlight the current player
+        const currentPlayerBlock = document.querySelector(`.round-container:nth-child(${currentRound}) .player-block:nth-child(${playerBlockIndex}) .player-info`);
+        if (currentPlayerBlock) {
+            currentPlayerBlock.style.backgroundColor = '#198754'; // green background for current player
+        }
+    }
+    
 
-    const interval = setInterval(function() {
-        countdownTimer -= 1; // Decrement the timer by 1 second
+    function startCountdownForPlayer() {
+        // Highlight current player
+        highlightCurrentPlayer();
+        document.getElementById('currentRound').textContent = currentRound;
+        document.getElementById('currentPick').textContent = currentPlayer;
+
+        let countdownTimer = parseInt(timePerPick, 10); 
+        const countdownElement = document.getElementById('countdown');
         updateCountdownDisplay(countdownTimer, countdownElement);
 
-        if (countdownTimer <= 0) {
-            clearInterval(interval);
-            countdownElement.textContent = "DRAFT STARTED";
-            // Add any additional logic for when the draft starts
-        }
-    }, 1000);
+        const interval = setInterval(function() {
+            countdownTimer -= 1;
+            updateCountdownDisplay(countdownTimer, countdownElement);
+
+            if (countdownTimer <= 0) {
+                clearInterval(interval);
+                currentPlayer++;
+                if (currentPlayer <= maxMembers) {
+                    startCountdownForPlayer(); // Start next player's countdown
+                } else {
+                    currentPlayer = 1; // Reset to first player for next round
+                    currentRound++;
+                    if (currentRound <= numberOfRounds) {
+                        startCountdownForPlayer();
+                    } else {
+                        countdownElement.textContent = "DRAFT COMPLETED";
+                    }
+                }
+            }
+        }, 1000);
+    }
+
+    // Start the countdown for the first player in the first round
+    startCountdownForPlayer();
 }
 
 function createRoundBlock(roundNumber, maxMembers) {
+    // Function to get initials from a name
+    function getInitials(name) {
+        return name.split(' ').map(part => part[0]).join('').toUpperCase();
+    }
+
     // Round container
     const roundContainer = document.createElement('div');
     roundContainer.className = 'round-container';
@@ -44,26 +87,25 @@ function createRoundBlock(roundNumber, maxMembers) {
     roundLabel.innerHTML = `<div class="rotate90">Round ${roundNumber}</div>`;
     roundContainer.appendChild(roundLabel);
 
-
-
     // Create player blocks for the round
     for (let i = 1; i <= maxMembers; i++) {
         const playerBlock = document.createElement('div');
         playerBlock.className = 'player-block';
 
-        // Check if it's the first player and use teamName
+        // Determine the initials for the first player
+        let initials = i === 1 && team ? getInitials(team) : "XX";
+
+        // Use teamName for the first player of each round
         if (i === 1 && team) {
-            console.log("entered if block");
             playerBlock.innerHTML = `
                 <div class="player-info">${ordinalSuffixOf(i)}</div>
-                <div class="player-initials">XX</div>
+                <div class="player-initials">${initials}</div>
                 <div class="player-info">${team}</div>
             `;
         } else {
-            console.log("entered else block");
             playerBlock.innerHTML = `
                 <div class="player-info">${ordinalSuffixOf(i)}</div>
-                <div class="player-initials">XX</div>
+                <div class="player-initials">${initials}</div>
                 <div class="player-info">Player ${i}</div>
             `;
         }
@@ -72,7 +114,6 @@ function createRoundBlock(roundNumber, maxMembers) {
 
     return roundContainer;
 }
-
 
 function ordinalSuffixOf(i) {
     var j = i % 10,
@@ -88,22 +129,21 @@ function ordinalSuffixOf(i) {
     }
     return i + "th";
 }
+
 function updateCountdownDisplay(seconds, countdownElement) {
-    // Calculate hours, minutes, and seconds
     let hours = Math.floor(seconds / 3600);
     let minutes = Math.floor((seconds % 3600) / 60);
     let remainingSeconds = seconds % 60;
 
-    // Pad the numbers with leading zeros if necessary
     hours = hours < 10 ? "0" + hours : hours;
     minutes = minutes < 10 ? "0" + minutes : minutes;
     remainingSeconds = remainingSeconds < 10 ? "0" + remainingSeconds : remainingSeconds;
 
-    // Update the display based on the total seconds
     if (hours > 0) {
         countdownElement.textContent = `${hours}:${minutes}:${remainingSeconds}`;
     } else {
         countdownElement.textContent = `${minutes}:${remainingSeconds}`;
     }
 }
+
 document.addEventListener('DOMContentLoaded', initializeDraftPage);

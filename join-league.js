@@ -12,7 +12,7 @@ sdk.addMessageListener((event) => {
         messageData.forEach(message => {
             if (message.publicKey === leagueId.value) {
                 // Redirect to draft page with the publicKey and mark match as found
-                window.location.href = `draft-page.html?link=${message.publicKey}`;
+                window.location.href = `draft-page.html?link=${leagueId.value}`;
                 matchFound = true;
             }
         });

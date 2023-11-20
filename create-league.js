@@ -3,7 +3,6 @@ import ResilientSDK from 'https://cdn.resilientdb.com/resilient-sdk.js';
 const sdk = new ResilientSDK();
 let recipientPublicKey = null;
 
-// Function to fetch and store the public key
 function initializePublicKey() {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -35,8 +34,6 @@ function initializePublicKey() {
 }
 
 initializePublicKey();
-
-// Adding a message listener
 sdk.addMessageListener((event) => {
     const message = event.data.data;
     alert(JSON.stringify(message));
@@ -52,7 +49,6 @@ sdk.addMessageListener((event) => {
     }
 });
 
-// Elements for creating a league
 var teamName = document.getElementById('teamName');
 var timePerPick = document.getElementById('timePerPick');
 var maxMembers = document.getElementById('maxMembers'); 

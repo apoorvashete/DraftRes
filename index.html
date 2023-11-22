@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>DraftRes - Premier League Fantasy Football Draft</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="theme-name" content="agen" />
+    <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
+    <link rel="stylesheet" href="plugins/themify-icons/themify-icons.css">
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <header class="navigation fixed-top">
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <a class="navbar-brand" href="index.html"><img src="css/icons/logo-transparent-png.png" width="160"  alt="Egen"></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
+          aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse text-center" id="navigation">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="#home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#overview">Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#future-scope">Future Scope</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#team">Team</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#contact">Contact</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="https://github.com/swatisinghvi99/DraftRes" target="_blank">Github
+              </a></h3>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <section class="banner bg-cover position-relative d-flex justify-content-center align-items-center"
+      data-background="images/backgrounds/footballers.jpeg" id="home">
+      <div class="container">
+        <div class="row">
+          <div class="col-12 text-center">
+            <h1 class="display-1 text-white font-weight-bold font-primary" style="color:#E84448">DraftRes</h1>
+          </div>
+        </div>
+        <div class="text-center text-md-center">
+          <button type="button" class="btn btn-success mt-2 ms-4" style="font-size: 18px;" id="join" onclick="redirectToJoinLeague()">
+            Join League
+        </button>
+        
+        
+          <button type="button" class="btn btn-success mt-2 ms-4" style="font-size: 18px;" id="create" onclick="redirectToCreateLeague()">Create League</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="overview">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 mx-auto text-center">
+            <h2 class="section-title">Features</h2>
+            <div class="section-border"></div>
+            <p class="lead">DraftRes' draft room offers a unique and engaging team selection experience. Accessed with valid credentials, teams follow a serpentine draft sequence (A-B-C-D-D-C-B-A) ensuring a balanced and dynamic selection process. Each team has a set time to pick players, with an automatic random selection for missed deadlines. Selections are broadcasted in real-time, keeping all teams informed about player affiliations. This continues until all selections are complete, creating an exciting and efficient drafting environment.</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-4 mb-4 mb-lg-0">
+            <div class="card hover-bg-secondary shadow py-4">
+              <div class="card-body text-center">
+                <div class="position-relative">
+                  <img src="css/icons/soccer.png" alt="Team" class="img-fluid mb-3" style="width: 64px; height: 64px;">
+                </div>
+                <h4 class="mb-4">Unique Team</h4>
+                <p>Unique teams, no shared players, endless possiblities!</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 mb-4 mb-lg-0">
+            <div class="card hover-bg-secondary shadow py-4">
+              <div class="card-body text-center">
+                <div class="position-relative">
+                  <img src="css/icons/team.png" alt="Draft" class="img-fluid mb-3" style="width: 64px; height: 64px;">
+                </div>
+                <h4 class="mb-4">Draft Your Team</h4>
+                <p>Take your turn drafting your team and select players one by one</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 mb-4 mb-lg-0">
+            <div class="card hover-bg-secondary shadow py-4">
+              <div class="card-body text-center">
+                <div class="position-relative">
+                  <img src="css/icons/chat.png" alt="Chat Box" class="img-fluid mb-3" style="width: 64px; height: 64px;">
+                </div>
+                <h4 class="mb-4">Chat With Friends</h4>
+                <p>Chat with other players and discuss strategies to help draft a better team</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-lg-4 offset-lg-2 mb-4 mb-lg-0">
+            <div class="card hover-bg-secondary shadow py-4">
+              <div class="card-body text-center">
+                <div class="position-relative">
+                  <img src="css/icons/cycle.png" alt="Snake Draft" class="img-fluid mb-3" style="width: 64px; height: 64px;">
+                </div>
+                <h4 class="mb-4">Snake Drafts</h4>
+                <p>Take turns selecting your players one by one until you have a full team</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 mb-4 mb-lg-0">
+            <div class="card hover-bg-secondary shadow py-4">
+              <div class="card-body text-center">
+                <div class="position-relative">
+                  <img src="css/icons/group.png" alt="Friends" class="img-fluid mb-3" style="width: 64px; height: 64px;">
+                </div>
+                <h4 class="mb-4">Play With Friends</h4>
+                <p>Choose custom settings for your league and share game link with friends</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="future-scope">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 mx-auto text-center">
+            <h2 class="section-title">Future Scope</h2>
+            <div class="section-border"></div>
+            <p class="lead">......
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="team">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-10 mx-auto text-center">
+            <h2>Our Team</h2>
+            <div class="section-border"></div>
+          </div>
+        </div>
+        <div class="row ">
+          <div class="col-lg-4 col-sm-6">
+            <div class="card hover-shadow shadow">
+              <img src="images/LinkedIn/swati.jpeg" alt="team-member" class="card-img-top">
+              <div class="card-body text-center position-relative zindex-1">
+                <h4><a class="text-dark" href="https://www.linkedin.com/in/swatisinghvi99/">Swati Singhvi</a></h4>
+              </div>
+              <div>
+                <ul class="list mb-5" style="list-style-type:circle; margin-left: 10px;">
+                  <li class="text-dark mb-3">..</li>
+                  <li class="text-dark mb-3">.. </li>
+                  <li class="text-dark mb-3">..</li>
+                  
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-sm-6">
+            <div class="card hover-shadow shadow">
+              <img src="images/LinkedIn/chris.jpg" alt="team-member" class="card-img-top">
+              <div class="card-body text-center position-relative zindex-1">
+                <h4><a class="text-dark" href="https://www.linkedin.com/in/chris-fernandez-6a187525a/">Chris Jackson Fernandez</a></h4>
+              </div>
+              <div>
+                <ul class="list mb-5" style="list-style-type:circle; margin-left: 10px;">
+                  <li class="text-dark mb-3">..</li>
+                  <li class="text-dark mb-3">.. </li>
+                  <li class="text-dark mb-3">..</li>
+                  
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-sm-6">
+            <div class="card hover-shadow shadow">
+              <img src="images/LinkedIn/apoorva.jpeg" alt="team-member" class="card-img-top">
+              <div class="card-body text-center position-relative zindex-1">
+                <h4><a class="text-dark" href="https://www.linkedin.com/in/apoorva-shete/">Apoorva Shete</a></h4>
+              </div>
+              <div>
+                <ul class="list mb-5" style="list-style-type:circle; margin-left: 10px;">
+                  <li class="text-dark mb-3">..</li>
+                  <li class="text-dark mb-3">.. </li>
+                  <li class="text-dark mb-3">..</li>
+                  
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-lg-4 offset-lg-2 col-sm-6">
+            <div class="card hover-shadow shadow">
+              <img src="images/LinkedIn/sofiya.jpeg" alt="team-member" class="card-img-top">
+              <div class="card-body text-center position-relative zindex-1">
+                <h4><a class="text-dark" href="https://www.linkedin.com/in/sofiya-shaikh-3b57571b6/">Sofiya Shaikh</a></h4>
+              </div>
+              <div>
+                <ul class="list mb-5" style="list-style-type:circle; margin-left: 10px;">
+                  <li class="text-dark mb-3">..</li>
+                  <li class="text-dark mb-3">.. </li>
+                  <li class="text-dark mb-3">..</li>
+                  
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-4 col-sm-6">
+            <div class="card hover-shadow shadow">
+              <img src="images/LinkedIn/saisha.jpeg" alt="team-member" class="card-img-top">
+              <div class="card-body text-center position-relative zindex-1">
+                <h4><a class="text-dark" href="https://www.linkedin.com/in/saisha-shetty-bba6b81a7/">Saisha Shetty</a></h4>
+              </div>
+              <div>
+                <ul class="list mb-5" style="list-style-type:circle; margin-left: 10px;">
+                  <li class="text-dark mb-3">..</li>
+                  <li class="text-dark mb-3">.. </li>
+                  <li class="text-dark mb-3">..</li>  
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="bg-secondary position-relative" id="contact">
+      <img src="images/backgrounds/football-field.jpeg" class="img-fluid overlay-image" alt="">
+      <div class="section">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="bg-white p-4">
+                <h3 class="text-center">Contact Details</h3>
+                
+                <table class="table table-striped mt-1">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">
+                        Email
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Swati Singhvi</td>
+                      <td>svsinghvi@ucdavis.edu</td>
+                    </tr>
+                    <tr>
+                      <td>Chris Jackson Fernandez</td>
+                      <td>cjfernandez@ucdavis.edu</td>
+                    </tr>
+                    <tr>
+                      <td>Sofiya Shaikh</td>
+                      <td>szshaikh@ucdavis.edu</td>
+                    </tr>
+                    <tr>
+                      <td>Apoorva Shete</td>
+                      <td>apshete@ucdavis.edu</td>
+                    </tr>
+                    <tr>
+                      <td>Saisha Shetty</td>
+                      <td>spshetty@ucdavis.edu</td>
+                    </tr>
+
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <script>
+      function redirectToJoinLeague() {
+        window.open('join.html', '_blank');
+      }
+      function redirectToCreateLeague() {
+        window.open('create.html', '_blank');
+      }
+    </script>
+    <script src="plugins/jQuery/jquery.min.js"></script>
+    <script src="plugins/bootstrap/bootstrap.min.js"></script>
+    <script src="js/script.js"></script>
+
+  </body>
+</html>

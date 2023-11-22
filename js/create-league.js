@@ -60,7 +60,6 @@ createLeagueBtn.addEventListener("click", commitContentScript);
 function commitContentScript() {
     if (recipientPublicKey) {
         localStorage.setItem("league", leagueName.value);
-        localStorage.setItem("team", teamName.value);
         localStorage.setItem("time", timePerPick.value);
         localStorage.setItem("members", maxMembers.value);
         localStorage.setItem("leagueId", recipientPublicKey);

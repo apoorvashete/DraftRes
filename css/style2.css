@@ -1,12 +1,12 @@
 .scroll-container {
-    overflow-x: auto; /* Enables horizontal scrolling */
-    white-space: nowrap; /* Ensures that the divs will be in one line */
+    overflow-x: auto;
+    white-space: nowrap; 
 }
 
 .round-container {
     display: inline-block;
     vertical-align: top;
-    margin-right: normal; /* Spacing between rounds */
+    margin-right: normal; 
 }
 
 .round-label {
@@ -29,16 +29,14 @@
     left: 65px;
 }
 .rotate90 {
-    /* Adjust the rotation point */
     transform: rotate(-90deg);
     transform-origin: center center;
-    width: 120px; /* Same as the height of the round label */
+    width: 120px;
     position: absolute;
     left: 50%;
     top: 50%;
-    /* Move the text to the middle of the div */
-    margin-left: -60px; /* Half the width */
-    margin-top: -10px; /* Adjust as needed */
+    margin-left: -60px; 
+    margin-top: -10px; 
     font-size: 18px;
 }
 .player-block {
@@ -57,7 +55,14 @@
 .player-info {
     text-align: center;
     padding: 4px;
-    font-size: 14px; /* Adjust as needed */
+    font-size: 14px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.player-info2 {
+    text-align: center;
+    padding: 4px;
+    font-size: 14px; 
     overflow: hidden;
     text-overflow: ellipsis;
 }

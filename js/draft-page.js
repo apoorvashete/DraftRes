@@ -5,6 +5,36 @@ var league = localStorage.getItem("league");
 var timePerPick = localStorage.getItem("time");
 var maxMembers = localStorage.getItem("members");
 var refreshLeagueBtn = document.getElementById("refreshLeagueBtn");
+var data = JSON.parse(localStorage.getItem("data"));
+
+console.log(data, "player data");
+
+var assetTable = document.getElementById("assetTable").getElementsByTagName('tbody')[0];
+
+data.forEach(function(item, index) {
+    // Check if the item has an 'asset' field and it's a non-empty string
+    if (item.asset && typeof item.asset === 'string') {
+      try {
+        // Parse the 'asset' field as JSON
+        var assetData = JSON.parse(item.asset.replace(/'/g, "\""));
+
+        // Create a new row in the table for each asset
+        var row = assetTable.insertRow();
+        var columns = ['ID', 'Name', 'Age', 'Photo', 'Nationality', 'Overall', 'Potential', 'Club', 'Preferred Foot', 'Weak Foot', 'Skill Moves', 'Position'];
+        columns.forEach(function(column) {
+            var cell = row.insertCell();
+            cell.textContent = assetData.data[column];
+          });
+        // Display the asset information in the console
+        console.log(`Asset Information for Item ${index + 1}:`);
+        console.log(assetData.data); // This will display the 'data' field inside 'asset'
+        console.log('\n');
+      } catch (error) {
+        console.error(`Error parsing 'asset' field for Item ${index + 1}:`, error);
+      }
+    }
+  });
+
 
 // Function to create the round blocks
 function createRoundBlock(roundNumber, maxMembers) {
@@ -107,32 +137,52 @@ function initializeDraftPage() {
         highlightCurrentPlayer();
         document.getElementById('currentRound').textContent = currentRound;
         document.getElementById('currentPick').textContent = currentPlayer;
-
-        let countdownTimer = parseInt(timePerPick, 10); 
+    
         const countdownElement = document.getElementById('countdown');
-        updateCountdownDisplay(countdownTimer, countdownElement);
-
-        const interval = setInterval(function() {
-            countdownTimer -= 1;
+    
+        // Function to start the regular countdown
+        function startRegularCountdown() {
+            let countdownTimer = parseInt(timePerPick, 10);
             updateCountdownDisplay(countdownTimer, countdownElement);
-
-            if (countdownTimer <= 0) {
-                clearInterval(interval);
-                currentPlayer++;
-                if (currentPlayer <= maxMembers) {
-                    startCountdownForPlayer(); // Start next player's countdown
-                } else {
-                    currentPlayer = 1; // Reset to first player for next round
-                    currentRound++;
-                    if (currentRound <= numberOfRounds) {
-                        startCountdownForPlayer();
+    
+            const interval = setInterval(function() {
+                countdownTimer -= 1;
+                updateCountdownDisplay(countdownTimer, countdownElement);
+    
+                if (countdownTimer <= 0) {
+                    clearInterval(interval);
+                    currentPlayer++;
+                    if (currentPlayer <= maxMembers) {
+                        startCountdownForPlayer(); // Start next player's countdown
                     } else {
-                        countdownElement.textContent = "DRAFT COMPLETED";
+                        currentPlayer = 1; // Reset to first player for next round
+                        currentRound++;
+                        if (currentRound <= numberOfRounds) {
+                            startCountdownForPlayer();
+                        } else {
+                            countdownElement.textContent = "DRAFT COMPLETED";
+                        }
                     }
                 }
-            }
-        }, 1000);
+            }, 1000);
+        }
+    
+        // Check if it's the first player of the first round
+        if (currentRound === 1 && currentPlayer === 1) {
+            let bufferTime = 60; // 60 seconds buffer
+            const bufferInterval = setInterval(() => {
+                bufferTime -= 1;
+                countdownElement.textContent = `Waiting: ${bufferTime} seconds`;
+                if (bufferTime <= 0) {
+                    clearInterval(bufferInterval);
+                    startRegularCountdown();
+                }
+            }, 1000);
+        } else {
+            startRegularCountdown();
+        }
     }
+    
 
     // Start the countdown for the first player in the first round
     startCountdownForPlayer();

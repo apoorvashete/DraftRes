@@ -14,7 +14,7 @@ var assetTable = document.getElementById("assetTable").getElementsByTagName('tbo
 data.sort((a, b) => {
     const overallA = getOverall(a.asset);
     const overallB = getOverall(b.asset);
-    return overallB - overallA; // Sort in descending order, change to overallA - overallB for ascending order
+    return overallB - overallA; // Sort in descending order
 });
 
 function getOverall(assetString) {
@@ -30,36 +30,31 @@ function getOverall(assetString) {
 var currentPage = 1;
 var rowsPerPage = 7;
 
-// Function to display a specific page
 function displayPage(page) {
     var start = (page - 1) * rowsPerPage;
     var end = start + rowsPerPage;
 
-    // Hide all rows
     Array.from(assetTable.rows).forEach((row, index) => {
         row.style.display = (index >= start && index < end) ? '' : 'none';
     });
 
-    // Update current page and page numbers
     currentPage = page;
     updatePageNumbers();
 }
 
 function updatePageNumbers() {
     var pageNumberContainer = document.getElementById('pageNumberContainer');
-    pageNumberContainer.innerHTML = ''; // Clear existing page numbers
+    pageNumberContainer.innerHTML = '';
 
     var totalRows = assetTable.rows.length;
     var maxPage = Math.ceil(totalRows / rowsPerPage);
-    var pageRange = 5; // Number of page numbers to display
+    var pageRange = 5;
     var startPage, endPage;
 
     if (maxPage <= pageRange) {
-        // Less than pageRange total pages so show all
         startPage = 1;
         endPage = maxPage;
     } else {
-        // More than pageRange total pages so calculate start and end pages
         var maxPivotPages = Math.floor(pageRange / 2);
         startPage = currentPage - maxPivotPages;
         endPage = currentPage + maxPivotPages;
@@ -77,69 +72,85 @@ function updatePageNumbers() {
         var pageButton = document.createElement('button');
         pageButton.textContent = i;
         pageButton.classList.add('page-number');
-    
-        // Highlight the current page button
+
         if (i === currentPage) {
             pageButton.classList.add('active');
         }
-    
-        // Add event listener for each page button
+
         pageButton.addEventListener('click', function() {
             displayPage(i);
         });
-    
+
         pageNumberContainer.appendChild(pageButton);
     }
 }
-
-data.forEach(function(item, index) {
-    // Check if the item has an 'asset' field and it's a non-empty string
-    if (item.asset && typeof item.asset === 'string') {
-      try {
-        // Parse the 'asset' field as JSON
-        var assetData = JSON.parse(item.asset.replace(/'/g, "\""));
-
-        // Create a new row in the table for each asset
-        var row = assetTable.insertRow();
-        var columns = ['Photo', 'Name', 'Age', 'Nationality', 'Overall', 'Potential', 'Club', 'Preferred Foot', 'Weak Foot', 'Skill Moves', 'Position'];
-        columns.forEach(function(column) {
-            var cell = row.insertCell();
-            //cell.textContent = assetData.data[column];
-            if (column === 'Photo') {
-                // If the column is 'Photo', create an img element
-                var img = document.createElement('img');
-                img.src = assetData.data[column]; // Set the src attribute to the image URL
-                cell.appendChild(img); // Add the img element to the table cell
-              } else {
-                // Otherwise, display the text data
-                cell.textContent = assetData.data[column];
-              }
-          });
-        
-        // Add a new cell for the "Draft" button
-        var draftCell = row.insertCell();
-        var draftButton = document.createElement('button');
-        draftButton.textContent = 'Draft';
-        draftButton.classList.add('btn', 'btn-success'); // Add Bootstrap button classes if needed
-        draftButton.addEventListener('click', function() {
-            // Add logic for drafting the player
-            console.log(`Player drafted: ${assetData.data.Name}`);
-        });
-        draftCell.appendChild(draftButton);
-        // Display the asset information in the console
-        console.log(`Asset Information for Item ${index + 1}:`);
-        console.log(assetData.data); // This will display the 'data' field inside 'asset'
-        console.log('\n');
-      } catch (error) {
-        console.error(`Error parsing 'asset' field for Item ${index + 1}:`, error);
-      }
+function populateTable(dataToDisplay) {
+    while (assetTable.rows.length > 0) {
+        assetTable.deleteRow(0);
     }
-  });
 
-// Initial display of the table and pagination
+    dataToDisplay.forEach(function(item, index) {
+        // Check if the item has an 'asset' field and it's a non-empty string
+        if (item.asset && typeof item.asset === 'string') {
+          try {
+            // Parse the 'asset' field as JSON
+            var assetData = JSON.parse(item.asset.replace(/'/g, "\""));
+    
+            // Create a new row in the table for each asset
+            var row = assetTable.insertRow();
+            var columns = ['Photo', 'Name', 'Age', 'Nationality', 'Overall', 'Potential', 'Club', 'Preferred Foot', 'Weak Foot', 'Skill Moves', 'Position'];
+            columns.forEach(function(column) {
+                var cell = row.insertCell();
+                //cell.textContent = assetData.data[column];
+                if (column === 'Photo') {
+                    // If the column is 'Photo', create an img element
+                    var img = document.createElement('img');
+                    img.src = assetData.data[column]; // Set the src attribute to the image URL
+                    cell.appendChild(img); // Add the img element to the table cell
+                  } else {
+                    // Otherwise, display the text data
+                    cell.textContent = assetData.data[column];
+                  }
+              });
+            
+            // Add a new cell for the "Draft" button
+            var draftCell = row.insertCell();
+            var draftButton = document.createElement('button');
+            draftButton.textContent = 'Draft';
+            draftButton.classList.add('btn', 'btn-success'); 
+            draftButton.addEventListener('click', function() {
+                console.log(`Player drafted: ${assetData.data.Name}`);
+            });
+            draftCell.appendChild(draftButton);
+            console.log(`Asset Information for Item ${index + 1}:`);
+            console.log(assetData.data); // This will display the 'data' field inside 'asset'
+            console.log('\n');
+          } catch (error) {
+            console.error(`Error parsing 'asset' field for Item ${index + 1}:`, error);
+          }
+        }
+      });
+
+    updatePageNumbers();
+}
+
+var searchInput = document.getElementById('playerSearch'); 
+
+function searchPlayers() {
+    var searchText = searchInput.value.toLowerCase();
+    var filteredData = searchText ? data.filter(item => {
+        return item.asset && item.asset.toLowerCase().includes(searchText);
+    }) : data;
+
+    populateTable(filteredData);
+    displayPage(1);
+}
+
+searchInput.addEventListener('input', searchPlayers);
+
+populateTable(data);
 displayPage(currentPage);
 
-// Event listeners for pagination buttons
 document.getElementById('prevButton').addEventListener('click', function() {
     if (currentPage > 1) {
         displayPage(currentPage - 1);
@@ -153,7 +164,6 @@ document.getElementById('nextButton').addEventListener('click', function() {
         displayPage(currentPage + 1);
     }
 });
-updatePageNumbers();
 
 // Function to create the round blocks
 function createRoundBlock(roundNumber, maxMembers) {
@@ -246,7 +256,7 @@ function initializeDraftPage() {
         // Highlight the current player
         const currentPlayerBlock = document.querySelector(`.round-container:nth-child(${currentRound}) .player-block:nth-child(${playerBlockIndex}) .player-info`);
         if (currentPlayerBlock) {
-            currentPlayerBlock.style.backgroundColor = '#198754'; // green background for current player
+            currentPlayerBlock.style.backgroundColor = '#198754';
         }
     }
     
@@ -313,7 +323,6 @@ refreshLeagueBtn.addEventListener('click', filterContentScript);
 var currentPageUrl = window.location.href;
 var urlParams = new URLSearchParams(new URL(currentPageUrl).search);
 
-// Get the value of the 'link' parameter
 var linkValue = urlParams.get('link');
 function filterContentScript() {
     sdk.sendMessage({
@@ -372,25 +381,3 @@ sdk.addMessageListener((event) => {
 function getInitials(name) {
     return name.split(' ').map(part => part[0]).join('').toUpperCase();
 }
-
-function searchPlayers() {
-    const input = document.getElementById('playerSearch');
-    const filter = input.value.toLowerCase(); // Convert user input to lowercase for case-insensitive search
-    const table = document.getElementById('assetTable');
-    const rows = table.getElementsByTagName('tr');
-
-    for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
-        const nameColumn = rows[i].getElementsByTagName('td')[1]; // Assuming Name is in the second column
-        if (nameColumn) {
-            const playerName = nameColumn.textContent.toLowerCase();
-            if (playerName.includes(filter)) {
-                rows[i].style.display = ''; // Show the row if the name matches the search
-            } else {
-                rows[i].style.display = 'none'; // Hide the row if it doesn't match
-            }
-        }
-    }
-}
-
-const searchInput = document.getElementById('playerSearch');
-searchInput.addEventListener('input', searchPlayers);

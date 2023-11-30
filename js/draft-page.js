@@ -11,6 +11,87 @@ console.log(data, "player data");
 
 var assetTable = document.getElementById("assetTable").getElementsByTagName('tbody')[0];
 
+data.sort((a, b) => {
+    const overallA = getOverall(a.asset);
+    const overallB = getOverall(b.asset);
+    return overallB - overallA; // Sort in descending order, change to overallA - overallB for ascending order
+});
+
+function getOverall(assetString) {
+    try {
+        const assetData = JSON.parse(assetString.replace(/'/g, "\""));
+        return assetData.data.Overall || 0; // Return 0 if 'Overall' is not present in the asset data
+    } catch (error) {
+        console.error("Error parsing 'asset' field:", error);
+        return 0; // Return 0 in case of an error
+    }
+}
+
+var currentPage = 1;
+var rowsPerPage = 7;
+
+// Function to display a specific page
+function displayPage(page) {
+    var start = (page - 1) * rowsPerPage;
+    var end = start + rowsPerPage;
+
+    // Hide all rows
+    Array.from(assetTable.rows).forEach((row, index) => {
+        row.style.display = (index >= start && index < end) ? '' : 'none';
+    });
+
+    // Update current page and page numbers
+    currentPage = page;
+    updatePageNumbers();
+}
+
+function updatePageNumbers() {
+    var pageNumberContainer = document.getElementById('pageNumberContainer');
+    pageNumberContainer.innerHTML = ''; // Clear existing page numbers
+
+    var totalRows = assetTable.rows.length;
+    var maxPage = Math.ceil(totalRows / rowsPerPage);
+    var pageRange = 5; // Number of page numbers to display
+    var startPage, endPage;
+
+    if (maxPage <= pageRange) {
+        // Less than pageRange total pages so show all
+        startPage = 1;
+        endPage = maxPage;
+    } else {
+        // More than pageRange total pages so calculate start and end pages
+        var maxPivotPages = Math.floor(pageRange / 2);
+        startPage = currentPage - maxPivotPages;
+        endPage = currentPage + maxPivotPages;
+
+        if (startPage < 1) {
+            startPage = 1;
+            endPage = pageRange;
+        } else if (endPage > maxPage) {
+            endPage = maxPage;
+            startPage = maxPage - pageRange + 1;
+        }
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+        var pageButton = document.createElement('button');
+        pageButton.textContent = i;
+        pageButton.classList.add('page-number');
+    
+        // Highlight the current page button
+        if (i === currentPage) {
+            pageButton.classList.add('active');
+        }
+    
+        // Add event listener for each page button
+        pageButton.addEventListener('click', function() {
+            displayPage(i);
+        });
+    
+        pageNumberContainer.appendChild(pageButton);
+    }
+}
+
 data.forEach(function(item, index) {
     // Check if the item has an 'asset' field and it's a non-empty string
     if (item.asset && typeof item.asset === 'string') {
@@ -20,11 +101,31 @@ data.forEach(function(item, index) {
 
         // Create a new row in the table for each asset
         var row = assetTable.insertRow();
-        var columns = ['ID', 'Name', 'Age', 'Photo', 'Nationality', 'Overall', 'Potential', 'Club', 'Preferred Foot', 'Weak Foot', 'Skill Moves', 'Position'];
+        var columns = ['Photo', 'Name', 'Age', 'Nationality', 'Overall', 'Potential', 'Club', 'Preferred Foot', 'Weak Foot', 'Skill Moves', 'Position'];
         columns.forEach(function(column) {
             var cell = row.insertCell();
-            cell.textContent = assetData.data[column];
+            //cell.textContent = assetData.data[column];
+            if (column === 'Photo') {
+                // If the column is 'Photo', create an img element
+                var img = document.createElement('img');
+                img.src = assetData.data[column]; // Set the src attribute to the image URL
+                cell.appendChild(img); // Add the img element to the table cell
+              } else {
+                // Otherwise, display the text data
+                cell.textContent = assetData.data[column];
+              }
           });
+        
+        // Add a new cell for the "Draft" button
+        var draftCell = row.insertCell();
+        var draftButton = document.createElement('button');
+        draftButton.textContent = 'Draft';
+        draftButton.classList.add('btn', 'btn-success'); // Add Bootstrap button classes if needed
+        draftButton.addEventListener('click', function() {
+            // Add logic for drafting the player
+            console.log(`Player drafted: ${assetData.data.Name}`);
+        });
+        draftCell.appendChild(draftButton);
         // Display the asset information in the console
         console.log(`Asset Information for Item ${index + 1}:`);
         console.log(assetData.data); // This will display the 'data' field inside 'asset'
@@ -35,6 +136,24 @@ data.forEach(function(item, index) {
     }
   });
 
+// Initial display of the table and pagination
+displayPage(currentPage);
+
+// Event listeners for pagination buttons
+document.getElementById('prevButton').addEventListener('click', function() {
+    if (currentPage > 1) {
+        displayPage(currentPage - 1);
+    }
+});
+
+document.getElementById('nextButton').addEventListener('click', function() {
+    var totalRows = assetTable.rows.length;
+    var maxPage = Math.ceil(totalRows / rowsPerPage);
+    if (currentPage < maxPage) {
+        displayPage(currentPage + 1);
+    }
+});
+updatePageNumbers();
 
 // Function to create the round blocks
 function createRoundBlock(roundNumber, maxMembers) {
@@ -253,6 +372,29 @@ sdk.addMessageListener((event) => {
 function getInitials(name) {
     return name.split(' ').map(part => part[0]).join('').toUpperCase();
 }
+
+function searchPlayers() {
+    const input = document.getElementById('playerSearch');
+    const filter = input.value.toLowerCase(); // Convert user input to lowercase for case-insensitive search
+    const table = document.getElementById('assetTable');
+    const rows = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
+        const nameColumn = rows[i].getElementsByTagName('td')[1]; // Assuming Name is in the second column
+        if (nameColumn) {
+            const playerName = nameColumn.textContent.toLowerCase();
+            if (playerName.includes(filter)) {
+                rows[i].style.display = ''; // Show the row if the name matches the search
+            } else {
+                rows[i].style.display = 'none'; // Hide the row if it doesn't match
+            }
+        }
+    }
+}
+
+const searchInput = document.getElementById('playerSearch');
+searchInput.addEventListener('input', searchPlayers);
+
 
 
 

@@ -33,15 +33,19 @@
             </div>
         </div>
 
+        <div class="search">
+            <input type="text" id="playerSearch" placeholder="Search Player">
+        </div>
         
 
+        
+        
         <table id="assetTable">
             <thead>
-              <tr>
-                <th>ID</th>
+            <tr>
+                <th>Photo</th>
                 <th>Name</th>
                 <th>Age</th>
-                <th>Photo</th>
                 <th>Nationality</th>
                 <th>Overall</th>
                 <th>Potential</th>
@@ -50,13 +54,23 @@
                 <th>Weak Foot</th>
                 <th>Skill Moves</th>
                 <th>Position</th>
-              </tr>
+                <th>Select</th>
+            </tr>
             </thead>
             <tbody>
-              Asset data will be inserted here -->
+            <!-- Asset data will be inserted here --> 
             </tbody>
-          </table>
         </table>
+        </table>
+
+        <div id="pagination">
+            <button id="prevButton">Previous</button>
+            <span id="pageNumberContainer"></span> <!-- Container for page numbers -->
+            <button id="nextButton">Next</button>
+        </div>
+       
+        
+        <!-- <script src="chat-client.js"></script> -->
 
         <script src="https://cdn.resilientdb.com/resilient-sdk.js" type="module"></script>
         <script src="js/draft-page.js" type="module"></script>

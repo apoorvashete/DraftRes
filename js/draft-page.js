@@ -394,7 +394,3 @@ function searchPlayers() {
 
 const searchInput = document.getElementById('playerSearch');
 searchInput.addEventListener('input', searchPlayers);
-
-
-
-

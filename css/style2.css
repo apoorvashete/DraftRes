@@ -1,3 +1,6 @@
+body{
+    padding: 0 !important;
+}
 .scroll-container {
     overflow-x: auto;
     white-space: nowrap; 
@@ -82,12 +85,12 @@
 table {
     border-collapse: collapse;
     width: 75%;
-    border: 2px solid black; 
-    margin: 25px 70px;/* Add a border around the table */
+    border: 1px solid black; 
+    margin: 10px 70px 25px 70px;
   }
 
   th, td {
-    border: 1px solid black; /* Add a border to cells */
+    border: 0.5px solid black; /* Add a border to cells */
     padding: 8px;
     /* text-align: left; */
   }
@@ -102,7 +105,6 @@ table {
   th {
     background-color: #f2f2f2;
     font-weight: bold;
-    border-bottom: 2px solid black; /* Increase padding for the headers */
     margin-bottom: 6px; /* Add margin at the bottom of the headers */
     text-align: center !important; /* Center the text within the headers */
     white-space: nowrap; /* Prevent text from wrapping */
@@ -143,12 +145,15 @@ tr{
 }
 
 .search{
-    margin-left: 50px !important; 
+    margin-left: 70px !important; 
 }
 
 .row {
     display: flex;
     justify-content: space-between;
 }
-
+.navbar-brand{
+    margin-top: 2px;
+    margin-bottom: 15px;
+}
 

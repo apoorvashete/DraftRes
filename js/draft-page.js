@@ -319,64 +319,72 @@ function initializeDraftPage() {
 
 // Add event listeners
 document.addEventListener('DOMContentLoaded', initializeDraftPage);
-refreshLeagueBtn.addEventListener('click', filterContentScript);
+refreshLeagueBtn.addEventListener('click', accountContentScript);
 var currentPageUrl = window.location.href;
 var urlParams = new URLSearchParams(new URL(currentPageUrl).search);
 
-var linkValue = urlParams.get('link');
-function filterContentScript() {
+function accountContentScript() {
     sdk.sendMessage({
-        direction: "filter-page-script",
-        owner: "E9i5MnApcy8nZ4JNkAghSBHSX7Kkv869dzf32q5hPoYB",
-        recipient: linkValue,
+      direction: "account-page-script",
     });
 }
 
+var linkValue = urlParams.get('link');
+var flag="account";
 sdk.addMessageListener((event) => {
     
     const messages = event.data.data;
-    function sortMessagesByTimestamp(messages) {
-        return messages.sort((a, b) => {
-            const assetA = JSON.parse(a.asset.replace(/'/g, '"'));
-            const assetB = JSON.parse(b.asset.replace(/'/g, '"'));
-            
-            const timestampA = parseInt(assetA.data.timeStamp, 10);
-            const timestampB = parseInt(assetB.data.timeStamp, 10);
-    
-            return timestampA - timestampB; // Sorts in ascending order
+    if(flag==="account"){
+        sdk.sendMessage({
+            direction: "filter-page-script",
+            owner: messages,
+            recipient: linkValue,
+        });
+        flag="refresh";
+    }else if(flag==="refresh"){
+        function sortMessagesByTimestamp(messages) {
+            return messages.sort((a, b) => {
+                const assetA = JSON.parse(a.asset.replace(/'/g, '"'));
+                const assetB = JSON.parse(b.asset.replace(/'/g, '"'));
+                
+                const timestampA = parseInt(assetA.data.timeStamp, 10);
+                const timestampB = parseInt(assetB.data.timeStamp, 10);
+        
+                return timestampA - timestampB; // Sorts in ascending order
+            });
+        }
+        
+        const sortedMessages = sortMessagesByTimestamp(messages);
+        
+        sortedMessages.forEach((message, index) => {
+            try {
+                let correctedJson = message.asset.replace(/'/g, "\"").replace(/(\w+):/g, '"$1":');
+                const assetData = JSON.parse(correctedJson);
+                
+                if (assetData.data.leagueId === linkValue) {
+                    const teamName = assetData.data.team;
+                    const playerNumber = (index % maxMembers) + 1; // Calculate player number
+
+                    // Update this player in each round
+                    for (let roundNumber = 1; roundNumber <= 12; roundNumber++) {
+                        const playerBlockSelector = `.round-container:nth-of-type(${roundNumber}) .player-block:nth-child(${playerNumber + 1}) .player-info2`;
+                        const playerBlock = document.querySelector(playerBlockSelector);
+
+                        const playerBlockSelectorInitials = `.round-container:nth-of-type(${roundNumber}) .player-block:nth-child(${playerNumber + 1}) .player-initials`;
+                        const playerBlockInitials = document.querySelector(playerBlockSelectorInitials);
+
+                        if (playerBlock && playerBlockInitials) {
+                            playerBlock.textContent = teamName;
+                            playerBlockInitials.textContent = getInitials(teamName);
+                        }
+
+                    }
+                }
+            } catch (e) {
+                console.error("Error parsing message asset:", e);
+            }
         });
     }
-    
-    const sortedMessages = sortMessagesByTimestamp(messages);
-    
-    sortedMessages.forEach((message, index) => {
-        try {
-            let correctedJson = message.asset.replace(/'/g, "\"").replace(/(\w+):/g, '"$1":');
-            const assetData = JSON.parse(correctedJson);
-            
-            if (assetData.data.leagueId === linkValue) {
-                const teamName = assetData.data.team;
-                const playerNumber = (index % maxMembers) + 1; // Calculate player number
-
-                // Update this player in each round
-                for (let roundNumber = 1; roundNumber <= 12; roundNumber++) {
-                    const playerBlockSelector = `.round-container:nth-of-type(${roundNumber}) .player-block:nth-child(${playerNumber + 1}) .player-info2`;
-                    const playerBlock = document.querySelector(playerBlockSelector);
-
-                    const playerBlockSelectorInitials = `.round-container:nth-of-type(${roundNumber}) .player-block:nth-child(${playerNumber + 1}) .player-initials`;
-                    const playerBlockInitials = document.querySelector(playerBlockSelectorInitials);
-
-                    if (playerBlock && playerBlockInitials) {
-                        playerBlock.textContent = teamName;
-                        playerBlockInitials.textContent = getInitials(teamName);
-                    }
-
-                }
-            }
-        } catch (e) {
-            console.error("Error parsing message asset:", e);
-        }
-    });
 });
 function getInitials(name) {
     return name.split(' ').map(part => part[0]).join('').toUpperCase();

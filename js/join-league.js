@@ -4,11 +4,19 @@ const sdk = new ResilientSDK();
 var teamName = document.getElementById('teamName');
 var joinLeagueBtn = document.getElementById("joinLeagueBtn");
 var leagueId = document.getElementById('leagueId');
-var flag = "create";
+var flag = "account";
 sdk.addMessageListener((event) => {
     const messageData = event.data.data;
-
-    if (flag === "create") {
+    console.log(messageData);
+    if(flag==="account"){
+         sdk.sendMessage({
+            direction: "filter-page-script",
+            owner: messageData,
+            recipient: leagueId.value,
+        });
+        flag="create";
+    }
+    else if (flag === "create") {
         if (messageData.length > 0) {
             // Compare the publicKey of the first message with the leagueId.value
             if (messageData[0].publicKey === leagueId.value) {
@@ -31,14 +39,10 @@ sdk.addMessageListener((event) => {
     }
 });
 
+joinLeagueBtn.addEventListener("click", accountContentScript);
 
-joinLeagueBtn.addEventListener("click", filterContentScript);
-
-function filterContentScript() {
+function accountContentScript() {
     sdk.sendMessage({
-      direction: "filter-page-script",
-      owner: "E9i5MnApcy8nZ4JNkAghSBHSX7Kkv869dzf32q5hPoYB",
-      recipient: leagueId.value,
+      direction: "account-page-script",
     });
-    
 }

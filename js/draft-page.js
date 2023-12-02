@@ -7,8 +7,6 @@ var maxMembers = localStorage.getItem("members");
 var refreshLeagueBtn = document.getElementById("refreshLeagueBtn");
 var data = JSON.parse(localStorage.getItem("data"));
 
-console.log(data, "player data");
-
 var assetTable = document.getElementById("assetTable").getElementsByTagName('tbody')[0];
 
 data.sort((a, b) => {
@@ -122,9 +120,6 @@ function populateTable(dataToDisplay) {
                 console.log(`Player drafted: ${assetData.data.Name}`);
             });
             draftCell.appendChild(draftButton);
-            console.log(`Asset Information for Item ${index + 1}:`);
-            console.log(assetData.data); // This will display the 'data' field inside 'asset'
-            console.log('\n');
           } catch (error) {
             console.error(`Error parsing 'asset' field for Item ${index + 1}:`, error);
           }
@@ -332,6 +327,9 @@ function accountContentScript() {
 }
 
 var linkValue = urlParams.get('link');
+var link2 = linkValue.split("?r=");
+var recipientPublicKey = link2[0];
+var ownerKey = link2[1];
 var flag="account";
 sdk.addMessageListener((event) => {
     
@@ -339,8 +337,8 @@ sdk.addMessageListener((event) => {
     if(flag==="account"){
         sdk.sendMessage({
             direction: "filter-page-script",
-            owner: messages,
-            recipient: linkValue,
+            owner: ownerKey,
+            recipient: recipientPublicKey,
         });
         flag="refresh";
     }else if(flag==="refresh"){

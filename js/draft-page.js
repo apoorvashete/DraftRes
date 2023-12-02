@@ -260,6 +260,7 @@ function initializeDraftPage() {
         }
     }
     
+    // var draftDirection = 1; //to track direction of draft
 
     function startCountdownForPlayer() {
         // Highlight current player
@@ -281,6 +282,7 @@ function initializeDraftPage() {
                 if (countdownTimer <= 0) {
                     clearInterval(interval);
                     currentPlayer++;
+
                     if (currentPlayer <= maxMembers) {
                         startCountdownForPlayer(); // Start next player's countdown
                     } else {
@@ -363,10 +365,21 @@ sdk.addMessageListener((event) => {
                 
                 if (assetData.data.leagueId === linkValue) {
                     const teamName = assetData.data.team;
-                    const playerNumber = (index % maxMembers) + 1; // Calculate player number
+                    //const playerNumber = (index % maxMembers) + 1; // Calculate player number
 
                     // Update this player in each round
                     for (let roundNumber = 1; roundNumber <= 12; roundNumber++) {
+                        let playerNumber;
+                        // Determine if the round is a normal (1, 2, 3, ...) or reverse round (..., 3, 2, 1)
+                        const isReverseRound = roundNumber % 2 === 0;
+
+                        if (!isReverseRound) {
+                            // Normal round order
+                            playerNumber = (index % maxMembers) + 1;
+                        } else {
+                            // Reversed round order
+                            playerNumber = maxMembers - (index % maxMembers);
+                        }
                         const playerBlockSelector = `.round-container:nth-of-type(${roundNumber}) .player-block:nth-child(${playerNumber + 1}) .player-info2`;
                         const playerBlock = document.querySelector(playerBlockSelector);
 

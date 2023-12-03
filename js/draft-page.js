@@ -9,6 +9,18 @@ var data = JSON.parse(localStorage.getItem("data"));
 
 var assetTable = document.getElementById("assetTable").getElementsByTagName('tbody')[0];
 
+let hasPlayerSelected = false; //to track one chance in each round
+
+let selectedButtons = []; //to keep track of drafted buttons
+
+function disableAllDraftButtons() {
+    const draftButtons = document.querySelectorAll('.btn-success');
+    draftButtons.forEach(button => {
+        button.disabled = true;
+    });
+}
+
+
 data.sort((a, b) => {
     const overallA = getOverall(a.asset);
     const overallB = getOverall(b.asset);
@@ -116,8 +128,22 @@ function populateTable(dataToDisplay) {
             draftButton.textContent = 'Draft';
             draftButton.classList.add('btn', 'btn-success'); 
             draftButton.id = index;
+            draftButton.disabled = true; //disabled initially
+            // draftButton.onclick = function() {
+            //     commitDraft(assetData.data.Name, index);
+            // };
             draftButton.onclick = function() {
-                commitDraft(assetData.data.Name, index);
+                if (!hasPlayerSelected) {
+                    commitDraft(assetData.data.Name, index);
+                    hasPlayerSelected = true; // Set flag to true as player has made a selection
+                    selectedButtons.push(this.id); // Add the button's ID to the selected list
+
+                    //change button color
+                    this.style.backgroundColor = 'red'; // Change the button's color to red
+                    this.style.borderColor = 'darkred'; 
+
+                    disableAllDraftButtons(); // Disable all other draft buttons for this round
+                }
             };
             draftCell.appendChild(draftButton);
           } catch (error) {
@@ -226,6 +252,17 @@ function updateCountdownDisplay(seconds, countdownElement) {
     }
 }
 
+//Function to enable draft buttons
+function enableDraftButtons() {
+    const draftButtons = document.querySelectorAll('.btn-success');
+    draftButtons.forEach(button => {
+        //enable all draft buttons except the previously drafted ones
+        if (!selectedButtons.includes(button.id)) {
+            button.disabled = false; 
+        }
+    });
+}
+
 function initializeDraftPage() {
     
     const numberOfRounds = 12; // Set this to the desired number of rounds
@@ -258,6 +295,9 @@ function initializeDraftPage() {
     // var draftDirection = 1; //to track direction of draft
 
     function startCountdownForPlayer() {
+
+        hasPlayerSelected = false; //change flag
+        
         // Highlight current player
         highlightCurrentPlayer();
         document.getElementById('currentRound').textContent = currentRound;
@@ -301,10 +341,12 @@ function initializeDraftPage() {
                 countdownElement.textContent = `Waiting: ${bufferTime} seconds`;
                 if (bufferTime <= 0) {
                     clearInterval(bufferInterval);
+                    enableDraftButtons(); //enable draft buttons after buffer time
                     startRegularCountdown();
                 }
             }, 1000);
         } else {
+            enableDraftButtons(); // If not the first player of the first round, enable buttons immediately
             startRegularCountdown();
         }
     }

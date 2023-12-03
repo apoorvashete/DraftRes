@@ -26,7 +26,7 @@ sdk.addMessageListener((event) => {
                 var timeStamp = new Date().getTime();
                 sdk.sendMessage({      
                     direction: "commit-page-script",
-                    message: `"team": "${teamName.value}","leagueId": "${id}","timeStamp": "${timeStamp}"`,
+                    message: `"function": "join","team": "${teamName.value}","leagueId": "${id}","timeStamp": "${timeStamp}"`,
                     amount: 100,
                     address: recipientPublicKey
                 });

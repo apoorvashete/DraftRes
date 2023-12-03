@@ -50,7 +50,7 @@ sdk.addMessageListener((event) => {
             
             sdk.sendMessage({
                 direction: "commit-page-script",
-                message: `"league": "${leagueName.value}","team": "${teamName.value}","time": "${timePerPick.value}","members": "${maxMembers.value}","leagueId": "${leagueId}","timeStamp": "${timeStamp}"`,
+                message: `"function": "create","league": "${leagueName.value}","team": "${teamName.value}","time": "${timePerPick.value}","members": "${maxMembers.value}","leagueId": "${leagueId}","timeStamp": "${timeStamp}"`,
                 amount: 100,
                 address: recipientPublicKey
             });

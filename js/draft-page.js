@@ -20,7 +20,6 @@ function getOverall(assetString) {
         const assetData = JSON.parse(assetString.replace(/'/g, "\""));
         return assetData.data.Overall || 0; // Return 0 if 'Overall' is not present in the asset data
     } catch (error) {
-        console.error("Error parsing 'asset' field:", error);
         return 0; // Return 0 in case of an error
     }
 }
@@ -116,12 +115,13 @@ function populateTable(dataToDisplay) {
             var draftButton = document.createElement('button');
             draftButton.textContent = 'Draft';
             draftButton.classList.add('btn', 'btn-success'); 
-            draftButton.addEventListener('click', function() {
-                console.log(`Player drafted: ${assetData.data.Name}`);
-            });
+            draftButton.id = index;
+            draftButton.onclick = function() {
+                commitDraft(assetData.data.Name, index);
+            };
             draftCell.appendChild(draftButton);
           } catch (error) {
-            console.error(`Error parsing 'asset' field for Item ${index + 1}:`, error);
+            
           }
         }
       });
@@ -329,24 +329,30 @@ function accountContentScript() {
 var linkValue = urlParams.get('link');
 var link2 = linkValue.split("?r=");
 var recipientPublicKey = link2[0];
-var ownerKey = link2[1];
 var flag="account";
 sdk.addMessageListener((event) => {
-    
     const messages = event.data.data;
     if(flag==="account"){
         sdk.sendMessage({
             direction: "filter-page-script",
-            owner: ownerKey,
+            owner: "",
             recipient: recipientPublicKey,
         });
         flag="refresh";
     }else if(flag==="refresh"){
         function sortMessagesByTimestamp(messages) {
-            return messages.sort((a, b) => {
+            // First filter the messages to include only those with function 'create' or 'join'
+            const filteredMessages = messages.filter(message => {
+                const asset = JSON.parse(message.asset.replace(/'/g, '"'));
+                const functionValue = asset.data.function;
+                return functionValue === 'create' || functionValue === 'join';
+            });
+            
+            // Then sort the filtered messages
+            return filteredMessages.sort((a, b) => {
                 const assetA = JSON.parse(a.asset.replace(/'/g, '"'));
                 const assetB = JSON.parse(b.asset.replace(/'/g, '"'));
-                
+        
                 const timestampA = parseInt(assetA.data.timeStamp, 10);
                 const timestampB = parseInt(assetB.data.timeStamp, 10);
         
@@ -355,7 +361,7 @@ sdk.addMessageListener((event) => {
         }
         
         const sortedMessages = sortMessagesByTimestamp(messages);
-        
+        console.log(sortedMessages);
         sortedMessages.forEach((message, index) => {
             try {
                 let correctedJson = message.asset.replace(/'/g, "\"").replace(/(\w+):/g, '"$1":');
@@ -364,7 +370,7 @@ sdk.addMessageListener((event) => {
                 if (assetData.data.leagueId === linkValue) {
                     const teamName = assetData.data.team;
                     //const playerNumber = (index % maxMembers) + 1; // Calculate player number
-
+                    localStorage.setItem("teamName",teamName);
                     // Update this player in each round
                     for (let roundNumber = 1; roundNumber <= 12; roundNumber++) {
                         let playerNumber;
@@ -388,15 +394,38 @@ sdk.addMessageListener((event) => {
                             playerBlock.textContent = teamName;
                             playerBlockInitials.textContent = getInitials(teamName);
                         }
-
                     }
                 }
             } catch (e) {
                 console.error("Error parsing message asset:", e);
             }
         });
+    }else if(flag==="drafted"){
+        sdk.sendMessage({
+            direction: "get-page-script",
+            id: messages
+        });
+        flag = "disable";
+    }else if(flag==="disable"){
+        var asset = messages.asset.replace(/'/g, "\"").replace(/(\w+):/g, '"$1":');
+        var data = JSON.parse(asset);
+        var buttonId = data.data.playerId;
+        var btn = document.getElementById(buttonId);
+        btn.disabled=true;
     }
 });
 function getInitials(name) {
     return name.split(' ').map(part => part[0]).join('').toUpperCase();
+}
+function commitDraft(name, id){
+    var team = localStorage.getItem("teamName");
+    console.log(team);
+    var timeStamp = new Date().getTime();
+    sdk.sendMessage({
+        direction: "commit-page-script",
+        message: `"team": "${team}","playerName": "${name}","playerId": "${id}", "timeStamp": "${timeStamp}"`,
+        amount: 100,
+        address: recipientPublicKey
+    });
+    flag="drafted";
 }

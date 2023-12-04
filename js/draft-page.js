@@ -2,7 +2,6 @@ import ResilientSDK from 'https://cdn.resilientdb.com/resilient-sdk.js';
 
 const sdk = new ResilientSDK();
 var league = localStorage.getItem("league");
-var timePerPick = localStorage.getItem("time");
 var maxMembers = localStorage.getItem("members");
 var refreshLeagueBtn = document.getElementById("refreshLeagueBtn");
 var data = JSON.parse(localStorage.getItem("data"));
@@ -12,6 +11,15 @@ var assetTable = document.getElementById("assetTable").getElementsByTagName('tbo
 let hasPlayerSelected = false; //to track one chance in each round
 
 let selectedButtons = []; //to keep track of drafted buttons
+
+
+
+
+// Variables related to current player Timers 
+
+const numberOfRounds = 12; // Set this to the desired number of rounds
+let currentPlayer = 1; // Start with the first player
+let currentRound = 1;
 
 function disableAllDraftButtons() {
     const draftButtons = document.querySelectorAll('.btn-success');
@@ -128,13 +136,13 @@ function populateTable(dataToDisplay) {
             draftButton.textContent = 'Draft';
             draftButton.classList.add('btn', 'btn-success'); 
             draftButton.id = index;
-            draftButton.disabled = true; //disabled initially
+            // draftButton.disabled = true; //disabled initially
             // draftButton.onclick = function() {
             //     commitDraft(assetData.data.Name, index);
             // };
             draftButton.onclick = function() {
                 if (!hasPlayerSelected) {
-                    commitDraft(assetData.data.Name, index);
+                    commitDraft(assetData.data.Photo, assetData.data.Name, index);
                     hasPlayerSelected = true; // Set flag to true as player has made a selection
                     selectedButtons.push(this.id); // Add the button's ID to the selected list
 
@@ -188,11 +196,6 @@ document.getElementById('nextButton').addEventListener('click', function() {
 
 // Function to create the round blocks
 function createRoundBlock(roundNumber, maxMembers) {
-    // Function to get initials from a name
-    function getInitials(name) {
-        return name.split(' ').map(part => part[0]).join('').toUpperCase();
-    }
-
     // Round container
     const roundContainer = document.createElement('div');
     roundContainer.className = 'round-container';
@@ -235,22 +238,7 @@ function ordinalSuffixOf(i) {
     return i + "th";
 }
 
-// Function to update the countdown display
-function updateCountdownDisplay(seconds, countdownElement) {
-    let hours = Math.floor(seconds / 3600);
-    let minutes = Math.floor((seconds % 3600) / 60);
-    let remainingSeconds = seconds % 60;
-
-    hours = hours < 10 ? "0" + hours : hours;
-    minutes = minutes < 10 ? "0" + minutes : minutes;
-    remainingSeconds = remainingSeconds < 10 ? "0" + remainingSeconds : remainingSeconds;
-
-    if (hours > 0) {
-        countdownElement.textContent = `${hours}:${minutes}:${remainingSeconds}`;
-    } else {
-        countdownElement.textContent = `${minutes}:${remainingSeconds}`;
-    }
-}
+const draftRoundsElement = document.getElementById('draftRounds');
 
 //Function to enable draft buttons
 function enableDraftButtons() {
@@ -262,13 +250,27 @@ function enableDraftButtons() {
         }
     });
 }
+ // Start with the first round
 
 function initializeDraftPage() {
-    
-    const numberOfRounds = 12; // Set this to the desired number of rounds
-    const draftRoundsElement = document.getElementById('draftRounds');
-    let currentPlayer = 1; // Start with the first player
-    let currentRound = 1; // Start with the first round
+    const playersButton = document.getElementById('playersBtn');
+    const teamsButton = document.getElementById('myTeamBtn'); // assuming first button is for players
+    const playersTable = document.getElementById('playersTable');
+    const teamsTable = document.getElementById('teamsTable'); // assuming you have an element with this ID for teams
+
+    // Set default visibility
+    playersTable.style.display = 'block'; // show players table by default
+    teamsTable.style.display = 'none'; // hide teams table by default
+
+    playersButton.addEventListener('click', function() {
+        playersTable.style.display = 'block';
+        teamsTable.style.display = 'none';
+    });
+
+    teamsButton.addEventListener('click', function() {
+        playersTable.style.display = 'none';
+        teamsTable.style.display = 'block';
+    });
 
     // Create blocks for all rounds
     for (let roundNumber = 1; roundNumber <= numberOfRounds; roundNumber++) {
@@ -276,84 +278,7 @@ function initializeDraftPage() {
         draftRoundsElement.appendChild(roundBlock);
     }
 
-    function highlightCurrentPlayer() {
-        // Reset background color for all player-info elements
-        document.querySelectorAll('.player-block .player-info').forEach(element => {
-            element.style.backgroundColor = ''; // reset to default
-        });
     
-        // Calculate the index of the player block in the round container
-        let playerBlockIndex = currentPlayer + 1; // +1 due to the round label being the first child
-    
-        // Highlight the current player
-        const currentPlayerBlock = document.querySelector(`.round-container:nth-child(${currentRound}) .player-block:nth-child(${playerBlockIndex}) .player-info`);
-        if (currentPlayerBlock) {
-            currentPlayerBlock.style.backgroundColor = '#198754';
-        }
-    }
-    
-    // var draftDirection = 1; //to track direction of draft
-
-    function startCountdownForPlayer() {
-
-        hasPlayerSelected = false; //change flag
-        
-        // Highlight current player
-        highlightCurrentPlayer();
-        document.getElementById('currentRound').textContent = currentRound;
-        document.getElementById('currentPick').textContent = currentPlayer;
-    
-        const countdownElement = document.getElementById('countdown');
-    
-        // Function to start the regular countdown
-        function startRegularCountdown() {
-            let countdownTimer = parseInt(timePerPick, 10);
-            updateCountdownDisplay(countdownTimer, countdownElement);
-    
-            const interval = setInterval(function() {
-                countdownTimer -= 1;
-                updateCountdownDisplay(countdownTimer, countdownElement);
-    
-                if (countdownTimer <= 0) {
-                    clearInterval(interval);
-                    currentPlayer++;
-
-                    if (currentPlayer <= maxMembers) {
-                        startCountdownForPlayer(); // Start next player's countdown
-                    } else {
-                        currentPlayer = 1; // Reset to first player for next round
-                        currentRound++;
-                        if (currentRound <= numberOfRounds) {
-                            startCountdownForPlayer();
-                        } else {
-                            countdownElement.textContent = "DRAFT COMPLETED";
-                        }
-                    }
-                }
-            }, 1000);
-        }
-    
-        // Check if it's the first player of the first round
-        if (currentRound === 1 && currentPlayer === 1) {
-            let bufferTime = 60; // 60 seconds buffer
-            const bufferInterval = setInterval(() => {
-                bufferTime -= 1;
-                countdownElement.textContent = `Waiting: ${bufferTime} seconds`;
-                if (bufferTime <= 0) {
-                    clearInterval(bufferInterval);
-                    enableDraftButtons(); //enable draft buttons after buffer time
-                    startRegularCountdown();
-                }
-            }, 1000);
-        } else {
-            enableDraftButtons(); // If not the first player of the first round, enable buttons immediately
-            startRegularCountdown();
-        }
-    }
-    
-
-    // Start the countdown for the first player in the first round
-    startCountdownForPlayer();
 }
 
 // Add event listeners
@@ -403,7 +328,6 @@ sdk.addMessageListener((event) => {
         }
         
         const sortedMessages = sortMessagesByTimestamp(messages);
-        console.log(sortedMessages);
         sortedMessages.forEach((message, index) => {
             try {
                 let correctedJson = message.asset.replace(/'/g, "\"").replace(/(\w+):/g, '"$1":');
@@ -449,25 +373,96 @@ sdk.addMessageListener((event) => {
         });
         flag = "disable";
     }else if(flag==="disable"){
-        var asset = messages.asset.replace(/'/g, "\"").replace(/(\w+):/g, '"$1":');
-        var data = JSON.parse(asset);
+        console.log(messages);
+        
+        var data = JSON.parse(messages.asset.replace(/'/g, '"'));
         var buttonId = data.data.playerId;
         var btn = document.getElementById(buttonId);
         btn.disabled=true;
+    }else if(flag==="check"){
+        sdk.sendMessage({
+            direction: "filter-page-script",
+            owner: messages,
+            recipient: recipientPublicKey,
+        });
+        flag="display";
+    }else if(flag==="display"){
+        function sortMessagesByTimestamp(messages) {
+            // First filter the messages to include only those with function 'create' or 'join'
+            const filteredMessages = messages.filter(message => {
+                const asset = JSON.parse(message.asset.replace(/'/g, '"'));
+                const functionValue = asset.data.function;
+                return functionValue === 'draft';
+            });
+            
+            // Then sort the filtered messages
+            return filteredMessages.sort((a, b) => {
+                const assetA = JSON.parse(a.asset.replace(/'/g, '"'));
+                const assetB = JSON.parse(b.asset.replace(/'/g, '"'));
+        
+                const timestampA = parseInt(assetA.data.timeStamp, 10);
+                const timestampB = parseInt(assetB.data.timeStamp, 10);
+        
+                return timestampA - timestampB; // Sorts in ascending order
+            });
+        }
+        
+        const sortedMessages = sortMessagesByTimestamp(messages);
+        console.log(sortedMessages);
+        
+        populateTableWithAssets(sortedMessages);
     }
 });
 function getInitials(name) {
     return name.split(' ').map(part => part[0]).join('').toUpperCase();
 }
-function commitDraft(name, id){
+function commitDraft(photo, name, id){
     var team = localStorage.getItem("teamName");
-    console.log(team);
     var timeStamp = new Date().getTime();
     sdk.sendMessage({
         direction: "commit-page-script",
-        message: `"team": "${team}","playerName": "${name}","playerId": "${id}", "timeStamp": "${timeStamp}"`,
+        message: `"function":"draft", "photo": "${photo}", "team": "${team}","playerName": "${name}","playerId": "${id}", "timeStamp": "${timeStamp}"`,
         amount: 100,
         address: recipientPublicKey
     });
     flag="drafted";
 }
+
+var teamBtn = document.getElementById("myTeamBtn");
+teamBtn.addEventListener('click', displayMyTeam);
+
+function displayMyTeam(){
+    sdk.sendMessage({
+        direction: "account-page-script",
+    });
+    flag="check";
+}
+function populateTableWithAssets(sortedMessages) {
+    // Assuming assetTable is a predefined table element in your HTML
+    var assetTable = document.getElementById('myTeamTable');
+
+    sortedMessages.forEach(function(assetData) {
+        // Parse the asset data
+        var parsedAssetData = JSON.parse(assetData.asset.replace(/'/g, '"'));
+        console.log(parsedAssetData);
+        // Create a new row in the table for each asset
+        var row = assetTable.insertRow();
+        var columns = ['Photo','Name'];
+        columns.forEach(function(column) {
+            var cell = row.insertCell();
+
+            if (column === 'Photo') {
+                // If the column is 'Photo', create an img element
+                var img = document.createElement('img');
+                img.src = parsedAssetData.data.photo; // Set the src attribute to the image URL
+                cell.appendChild(img); // Add the img element to the table cell
+              }
+            if (column === 'Name') {
+                console.log(parsedAssetData.data.playerName);
+                cell.textContent = parsedAssetData.data.playerName; // Access the playerName property
+            }
+            
+        });
+    });
+}
+

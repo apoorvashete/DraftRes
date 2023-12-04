@@ -84,14 +84,15 @@ body{
 
 table {
     border-collapse: collapse;
-    width: 75%;
+    width: 30%;
     border: 1px solid black; 
-    margin: 10px 70px 25px 70px;
+    margin: 10px 15px 25px 0px;
+    font-size: 15px;
   }
 
   th, td {
     border: 0.5px solid black; /* Add a border to cells */
-    padding: 8px;
+    padding: 5px;
     /* text-align: left; */
   }
 
@@ -120,11 +121,12 @@ tbody tr:nth-child(even) {
 
 tr{
     height: 2px;
+    text-align: center;
 
 }
 
 #pagination{
-    text-align: center;
+    text-align: right;
     margin-bottom: 20px;
 }
 #pagination span{
@@ -145,12 +147,14 @@ tr{
 }
 
 .search{
-    margin-left: 70px !important; 
+    margin-left: 0px !important; 
 }
 
 .row {
     display: flex;
     justify-content: space-between;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
 }
 .navbar-brand{
     margin-top: 2px;

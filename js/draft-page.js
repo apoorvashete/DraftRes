@@ -2,34 +2,107 @@ import ResilientSDK from 'https://cdn.resilientdb.com/resilient-sdk.js';
 
 const sdk = new ResilientSDK();
 var league = localStorage.getItem("league");
-var maxMembers = localStorage.getItem("members");
+
 var refreshLeagueBtn = document.getElementById("refreshLeagueBtn");
-var data = JSON.parse(localStorage.getItem("data"));
+var playersData = JSON.parse(localStorage.getItem("data"));
 
 var assetTable = document.getElementById("assetTable").getElementsByTagName('tbody')[0];
 
 let hasPlayerSelected = false; //to track one chance in each round
 
 let selectedButtons = []; //to keep track of drafted buttons
+let maxMembers = 0;
+let playerIDs = [];
+var currentPageUrl = window.location.href;
+var urlParams = new URLSearchParams(new URL(currentPageUrl).search);
+var linkValue = urlParams.get('link');
+var link2 = linkValue.split("?r=");
+var recipientPublicKey = link2[0];
+var ownerKey = link2[1];
+var flag="account";
+var currentPage = 1;
+var rowsPerPage = 7;
 
+var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
 
+// Modify the query with a placeholder
+var graphqlQuery = `
+  query getFilteredTransactions($ownerPublicKey: String!, $recipientPublicKey: String!) {
+    getFilteredTransactions(filter: {
+      ownerPublicKey: $ownerPublicKey
+      recipientPublicKey: $recipientPublicKey
+    }) {
+      id
+      version
+      amount
+      metadata
+      operation
+      asset
+      publicKey
+      uri
+      type
+    }
+  }
+`;
 
+// Replace the placeholder in the query with the actual variable
+var graphql = JSON.stringify({
+  query: graphqlQuery,
+  variables: {
+    ownerPublicKey: "",
+    recipientPublicKey: recipientPublicKey
+  }
+});
 
-// Variables related to current player Timers 
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: graphql,
+  redirect: 'follow'
+};
+
+fetch("http://cloud.draftres.pro/graphql", requestOptions)
+      .then(response => response.json())
+      .then(data => {
+        let transactions = data.data.getFilteredTransactions;
+
+        let memberValues = transactions
+          .map(transaction => {
+            let asset = JSON.parse(transaction.asset.replace(/'/g, "\""));
+
+            // For maxMembers
+            if (asset.data && asset.data.function === 'create') {
+                return parseInt(asset.data.members);
+            }
+
+            // For playerIDs
+            if (asset.data && asset.data.function === 'draft' && asset.data.playerId) {
+                playerIDs.push(asset.data.playerId);
+            }
+
+            return null;
+          })
+          .filter(members => members !== null);
+
+        // Update maxMembers
+        maxMembers = memberValues.length > 0 ? memberValues[0] : 0;
+
+        // Log or process maxMembers and playerIDs as needed
+        console.log("Max Members: ", maxMembers);
+        console.log("Player IDs: ", playerIDs);
+        populateTable(playersData);
+        displayPage(currentPage);
+        initializeDraftPage();
+        
+      })
+      .catch(error => console.log('error', error));
 
 const numberOfRounds = 12; // Set this to the desired number of rounds
 let currentPlayer = 1; // Start with the first player
 let currentRound = 1;
 
-function disableAllDraftButtons() {
-    const draftButtons = document.querySelectorAll('.btn-success');
-    draftButtons.forEach(button => {
-        button.disabled = true;
-    });
-}
-
-
-data.sort((a, b) => {
+playersData.sort((a, b) => {
     const overallA = getOverall(a.asset);
     const overallB = getOverall(b.asset);
     return overallB - overallA; // Sort in descending order
@@ -44,8 +117,7 @@ function getOverall(assetString) {
     }
 }
 
-var currentPage = 1;
-var rowsPerPage = 7;
+
 
 function displayPage(page) {
     var start = (page - 1) * rowsPerPage;
@@ -101,75 +173,71 @@ function updatePageNumbers() {
         pageNumberContainer.appendChild(pageButton);
     }
 }
-function populateTable(dataToDisplay) {
+function populateTable(dataToDisplay) { // Assuming playerIDs is passed as an argument
     while (assetTable.rows.length > 0) {
         assetTable.deleteRow(0);
     }
-
     dataToDisplay.forEach(function(item, index) {
-        // Check if the item has an 'asset' field and it's a non-empty string
         if (item.asset && typeof item.asset === 'string') {
-          try {
-            // Parse the 'asset' field as JSON
-            var assetData = JSON.parse(item.asset.replace(/'/g, "\""));
-    
-            // Create a new row in the table for each asset
-            var row = assetTable.insertRow();
-            var columns = ['Photo', 'Name', 'Age', 'Nationality', 'Overall', 'Potential', 'Club', 'Preferred Foot', 'Weak Foot', 'Skill Moves', 'Position'];
-            columns.forEach(function(column) {
-                var cell = row.insertCell();
-                //cell.textContent = assetData.data[column];
-                if (column === 'Photo') {
-                    // If the column is 'Photo', create an img element
-                    var img = document.createElement('img');
-                    img.src = assetData.data[column]; // Set the src attribute to the image URL
-                    cell.appendChild(img); // Add the img element to the table cell
-                  } else {
-                    // Otherwise, display the text data
-                    cell.textContent = assetData.data[column];
-                  }
-              });
-            
-            // Add a new cell for the "Draft" button
-            var draftCell = row.insertCell();
-            var draftButton = document.createElement('button');
-            draftButton.textContent = 'Draft';
-            draftButton.classList.add('btn', 'btn-success'); 
-            draftButton.id = index;
-            // draftButton.disabled = true; //disabled initially
-            // draftButton.onclick = function() {
-            //     commitDraft(assetData.data.Name, index);
-            // };
-            draftButton.onclick = function() {
-                if (!hasPlayerSelected) {
-                    commitDraft(assetData.data.Photo, assetData.data.Name, index);
-                    hasPlayerSelected = true; // Set flag to true as player has made a selection
-                    selectedButtons.push(this.id); // Add the button's ID to the selected list
+            try {
+                var assetData = JSON.parse(item.asset.replace(/'/g, '"'));
+                var row = assetTable.insertRow();
+                var columns = ['Photo', 'Name', 'Age', 'Nationality', 'Overall', 'Potential', 'Club', 'Preferred Foot', 'Weak Foot', 'Skill Moves', 'Position'];
 
-                    //change button color
-                    this.style.backgroundColor = 'red'; // Change the button's color to red
-                    this.style.borderColor = 'darkred'; 
+                columns.forEach(function(column) {
+                    var cell = row.insertCell();
+                    if (column === 'Photo') {
+                        var img = document.createElement('img');
+                        img.src = assetData.data[column];
+                        cell.appendChild(img);
+                    } else {
+                        cell.textContent = assetData.data[column];
+                    }
+                });
 
-                    disableAllDraftButtons(); // Disable all other draft buttons for this round
+                var draftCell = row.insertCell();
+                var draftButton = document.createElement('button');
+                draftButton.textContent = 'Draft';
+                draftButton.classList.add('btn', 'btn-success');
+                draftButton.id = index; // Set button ID to index
+
+                if (playerIDs.includes(index.toString())) {
+                    // If index is in the playerIDs array, disable the button and change its color
+                    draftButton.style.backgroundColor = 'red';
+                    draftButton.disabled = true;
                 }
-            };
-            draftCell.appendChild(draftButton);
-          } catch (error) {
-            
-          }
+
+                draftButton.onclick = function() {
+                    if (!hasPlayerSelected) {
+                        
+                        commitDraft(assetData.data.Photo, assetData.data.Name, index);
+                        hasPlayerSelected = true; // Set flag to true as player has made a selection
+                        selectedButtons.push(this.id); // Add the button's ID to the selected list
+
+                        //change button color
+                        this.style.backgroundColor = 'red';
+                        this.disabled = true;
+                    }
+                    location.reload();
+                };
+                draftCell.appendChild(draftButton);
+            } catch (error) {
+               
+            }
         }
-      });
+    });
 
     updatePageNumbers();
 }
+
 
 var searchInput = document.getElementById('playerSearch'); 
 
 function searchPlayers() {
     var searchText = searchInput.value.toLowerCase();
-    var filteredData = searchText ? data.filter(item => {
+    var filteredData = searchText ? playersData.filter(item => {
         return item.asset && item.asset.toLowerCase().includes(searchText);
-    }) : data;
+    }) : playersData;
 
     populateTable(filteredData);
     displayPage(1);
@@ -177,8 +245,8 @@ function searchPlayers() {
 
 searchInput.addEventListener('input', searchPlayers);
 
-populateTable(data);
-displayPage(currentPage);
+// populateTable(playersData);
+// displayPage(currentPage);
 
 document.getElementById('prevButton').addEventListener('click', function() {
     if (currentPage > 1) {
@@ -240,16 +308,6 @@ function ordinalSuffixOf(i) {
 
 const draftRoundsElement = document.getElementById('draftRounds');
 
-//Function to enable draft buttons
-function enableDraftButtons() {
-    const draftButtons = document.querySelectorAll('.btn-success');
-    draftButtons.forEach(button => {
-        //enable all draft buttons except the previously drafted ones
-        if (!selectedButtons.includes(button.id)) {
-            button.disabled = false; 
-        }
-    });
-}
  // Start with the first round
 
 function initializeDraftPage() {
@@ -276,16 +334,13 @@ function initializeDraftPage() {
     for (let roundNumber = 1; roundNumber <= numberOfRounds; roundNumber++) {
         const roundBlock = createRoundBlock(roundNumber, maxMembers);
         draftRoundsElement.appendChild(roundBlock);
-    }
-
-    
+    } 
 }
 
 // Add event listeners
-document.addEventListener('DOMContentLoaded', initializeDraftPage);
+//document.addEventListener('DOMContentLoaded', initializeDraftPage);
 refreshLeagueBtn.addEventListener('click', accountContentScript);
-var currentPageUrl = window.location.href;
-var urlParams = new URLSearchParams(new URL(currentPageUrl).search);
+
 
 function accountContentScript() {
     sdk.sendMessage({
@@ -293,12 +348,10 @@ function accountContentScript() {
     });
 }
 
-var linkValue = urlParams.get('link');
-var link2 = linkValue.split("?r=");
-var recipientPublicKey = link2[0];
-var flag="account";
+
 sdk.addMessageListener((event) => {
     const messages = event.data.data;
+    console.log(messages);
     if(flag==="account"){
         sdk.sendMessage({
             direction: "filter-page-script",
@@ -334,6 +387,7 @@ sdk.addMessageListener((event) => {
                 const assetData = JSON.parse(correctedJson);
                 
                 if (assetData.data.leagueId === linkValue) {
+                    console.log(maxMembers);
                     const teamName = assetData.data.team;
                     //const playerNumber = (index % maxMembers) + 1; // Calculate player number
                     localStorage.setItem("teamName",teamName);
@@ -371,14 +425,17 @@ sdk.addMessageListener((event) => {
             direction: "get-page-script",
             id: messages
         });
+        
         flag = "disable";
+        location.reload();
     }else if(flag==="disable"){
         console.log(messages);
         
-        var data = JSON.parse(messages.asset.replace(/'/g, '"'));
-        var buttonId = data.data.playerId;
+        var disabledData = JSON.parse(messages.asset.replace(/'/g, '"'));
+        var buttonId = disabledData.data.playerId;
         var btn = document.getElementById(buttonId);
         btn.disabled=true;
+        location.reload();
     }else if(flag==="check"){
         sdk.sendMessage({
             direction: "filter-page-script",
@@ -408,7 +465,6 @@ sdk.addMessageListener((event) => {
         }
         
         const sortedMessages = sortMessagesByTimestamp(messages);
-        console.log(sortedMessages);
         
         populateTableWithAssets(sortedMessages);
     }

@@ -41,7 +41,6 @@ sdk.addMessageListener((event) => {
     if(flag==="account"){
         if (recipientPublicKey) {
             localStorage.setItem("league", leagueName.value);
-            localStorage.setItem("time", timePerPick.value);
             localStorage.setItem("members", maxMembers.value);
             localStorage.setItem("leagueId", recipientPublicKey);
             var leagueId = recipientPublicKey+"?r="+message;
@@ -50,7 +49,7 @@ sdk.addMessageListener((event) => {
             
             sdk.sendMessage({
                 direction: "commit-page-script",
-                message: `"function": "create","league": "${leagueName.value}","team": "${teamName.value}","time": "${timePerPick.value}","members": "${maxMembers.value}","leagueId": "${leagueId}","timeStamp": "${timeStamp}"`,
+                message: `"function": "create","league": "${leagueName.value}","team": "${teamName.value}","members": "${maxMembers.value}","leagueId": "${leagueId}","timeStamp": "${timeStamp}"`,
                 amount: 100,
                 address: recipientPublicKey
             });
@@ -65,7 +64,6 @@ sdk.addMessageListener((event) => {
 });
 
 var teamName = document.getElementById('teamName');
-var timePerPick = document.getElementById('timePerPick');
 var maxMembers = document.getElementById('maxMembers'); 
 var leagueName = document.getElementById('leagueName');
 var createLeagueBtn = document.getElementById("createLeagueBtn");

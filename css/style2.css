@@ -84,7 +84,7 @@ body{
 
 table {
     border-collapse: collapse;
-    width: 30%;
+    width: 100%;
     border: 1px solid black; 
     margin: 10px 15px 25px 0px;
     font-size: 15px;

@@ -1096,3 +1096,10 @@ th{
   border-radius: 5px;
   margin: 20px 50px;
 }
+@media (min-width: 992px) { /* Large screens */
+  .img-large-screen {
+    object-fit: cover;
+      max-height: 850px; /* Example value; adjust as needed */
+      width: 100%; /* Maintain aspect ratio */
+  }
+}

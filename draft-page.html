@@ -11,13 +11,13 @@
         <div class="row" style="background-color: #07085d;margin-bottom: 25px;">
         <a class="navbar-brand" href="index.html"><img src="css/icons/logo-transparent-png.png" width="160" alt="Egen"></a>
         </div>
-        <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 15px;">
+        <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 30px;">
             <div class="col-sm-12">
                 <div style="width: 100%; height: 120px; background-color: rgb(255, 255, 255); border: 1px solid rgb(221, 221, 221); border-radius: 4px;">
-                    <div class="col-lg-2 col-md-3 col-sm-3 col-xs-12" style="height: 100%; padding-left: 20px; padding-top: 10px; background-color: rgb(255, 255, 255);">
+                    <div class="col-lg-1 col-md-1" style="height: 100%; width: 11%; padding:40px 0px 30px 20px; background-color: rgb(255, 255, 255);">
                         <div style="min-width: 175px;">
                             
-                            <button type="submit" class="btn btn-primary" id="refreshLeagueBtn">Refresh</button>
+                            <button type="submit" class="btn btn-primary" id="refreshLeagueBtn">Display Players</button>
                         </div>
                     </div>
                     <div
@@ -30,11 +30,11 @@
             <div class="hidden-xs" style="margin-bottom: 10px;">
                 <div class="btn-group btn-group-justified" role="group">
                     <div class="btn-group" role="group"><button type="button" class="btn btn-default" id="playersBtn">Players</button></div>
-                    <div class="btn-group" role="group"><button type="button" class="btn btn-default" id="myTeamBtn">Teams</button></div>
+                    <div class="btn-group" role="group"><button type="button" class="btn btn-default" id="myTeamBtn">My Team</button></div>
                 </div>
             </div>
         </div>
-        <div class="col-md-10" id="playersTable">
+        <div class="col-md-12" id="playersTable">
             <div class="search">
                 <input type="text" id="playerSearch" placeholder="Search Player">
             </div>
@@ -68,7 +68,7 @@
             </div>
         </div>
 
-        <div class="col-md-10" id="teamsTable" style="display: none;">
+        <div class="col-md-8" id="teamsTable" style="display: none;">
             <!-- Structure similar to players table -->
             <table id="myTeamTable">
                 <thead>

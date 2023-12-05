@@ -17,6 +17,7 @@ p {
   font-size: 15px;
   line-height: 1.7;
   font-family: "Poppins", sans-serif;
+  margin-bottom: 36px;
 }
 
 .lead {
@@ -257,8 +258,8 @@ a:hover {
 }
 
 .section {
-  padding-top: 110px;
-  padding-bottom: 100px;
+  padding-top: 50px;
+  padding-bottom: 50px;
 }
 .section-sm {
   padding-top: 60px;
@@ -1096,7 +1097,7 @@ th{
   border-radius: 5px;
   margin: 20px 50px;
 }
-@media (min-width: 992px) { /* Large screens */
+@media (min-width: 1800px) { /* Large screens */
   .img-large-screen {
     object-fit: cover;
       max-height: 850px; /* Example value; adjust as needed */

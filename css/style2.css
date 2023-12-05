@@ -43,7 +43,7 @@ body{
     font-size: 18px;
 }
 .player-block {
-    width: 140px;
+    width: 185px;
     height: 120px;
     display: inline-block;
     vertical-align: top;
@@ -126,7 +126,7 @@ tr{
 }
 
 #pagination{
-    text-align: right;
+    text-align: center;
     margin-bottom: 20px;
 }
 #pagination span{
@@ -135,19 +135,19 @@ tr{
     margin-bottom: 10px;
     display: inline-block;
     color: black;
-    padding: 8px 16px;
     text-decoration: none;
     margin: 0 4px;
+    border-color: transparent;
     
 }
 .page-number.active {
     background-color: #198754;
   color: white;
-  border: 1px solid #198754;
+  border-color: transparent;
 }
 
 .search{
-    margin-left: 0px !important; 
+    text-align: center;
 }
 
 .row {
@@ -160,4 +160,17 @@ tr{
     margin-top: 2px;
     margin-bottom: 15px;
 }
-
+#displayTeamBtn{
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+}
+#playerSearch{
+    width: 18%;
+    text-align: center;
+}
+.btn-default:focus, .btn-active {
+    background-color: rgb(43, 50, 84);
+    color: #fff;
+    outline: none; /* Optional: Removes the default focus outline */
+}

@@ -3,7 +3,7 @@ import ResilientSDK from 'https://cdn.resilientdb.com/resilient-sdk.js';
 const sdk = new ResilientSDK();
 var league = localStorage.getItem("league");
 
-var refreshLeagueBtn = document.getElementById("refreshLeagueBtn");
+
 var playersData = JSON.parse(localStorage.getItem("data"));
 
 var assetTable = document.getElementById("assetTable").getElementsByTagName('tbody')[0];
@@ -18,11 +18,11 @@ var urlParams = new URLSearchParams(new URL(currentPageUrl).search);
 var linkValue = urlParams.get('link');
 var link2 = linkValue.split("?r=");
 var recipientPublicKey = link2[0];
-var ownerKey = link2[1];
+var myTeamName = localStorage.getItem("teamName");
+localStorage.setItem("displayteamName",myTeamName);
 var flag="account";
 var currentPage = 1;
 var rowsPerPage = 7;
-
 var myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
@@ -75,7 +75,7 @@ fetch("http://cloud.draftres.pro/graphql", requestOptions)
             if (asset.data && asset.data.function === 'create') {
                 return parseInt(asset.data.members);
             }
-
+            
             // For playerIDs
             if (asset.data && asset.data.function === 'draft' && asset.data.playerId) {
                 playerIDs.push(asset.data.playerId);
@@ -88,19 +88,19 @@ fetch("http://cloud.draftres.pro/graphql", requestOptions)
         // Update maxMembers
         maxMembers = memberValues.length > 0 ? memberValues[0] : 0;
 
-        // Log or process maxMembers and playerIDs as needed
-        console.log("Max Members: ", maxMembers);
-        console.log("Player IDs: ", playerIDs);
+        
         populateTable(playersData);
         displayPage(currentPage);
         initializeDraftPage();
+        getTeamNames(transactions);
+        
         
       })
       .catch(error => console.log('error', error));
 
 const numberOfRounds = 12; // Set this to the desired number of rounds
 let currentPlayer = 1; // Start with the first player
-let currentRound = 1;
+
 
 playersData.sort((a, b) => {
     const overallA = getOverall(a.asset);
@@ -199,6 +199,7 @@ function populateTable(dataToDisplay) { // Assuming playerIDs is passed as an ar
                 var draftButton = document.createElement('button');
                 draftButton.textContent = 'Draft';
                 draftButton.classList.add('btn', 'btn-success');
+                draftButton.style.backgroundColor = '#198754';
                 draftButton.id = index; // Set button ID to index
 
                 if (playerIDs.includes(index.toString())) {
@@ -206,11 +207,14 @@ function populateTable(dataToDisplay) { // Assuming playerIDs is passed as an ar
                     draftButton.style.backgroundColor = 'red';
                     draftButton.disabled = true;
                 }
-
+                
+                if(maxMembers===2 && playerIDs.length===24){
+                    window.location.href = `display-results.html?link=${linkValue}`;
+                }
                 draftButton.onclick = function() {
                     if (!hasPlayerSelected) {
                         
-                        commitDraft(assetData.data.Photo, assetData.data.Name, index);
+                        commitDraft(assetData.data.Photo, assetData.data.Name, assetData.data.Overall, assetData.data.Club, index);
                         hasPlayerSelected = true; // Set flag to true as player has made a selection
                         selectedButtons.push(this.id); // Add the button's ID to the selected list
 
@@ -218,7 +222,7 @@ function populateTable(dataToDisplay) { // Assuming playerIDs is passed as an ar
                         this.style.backgroundColor = 'red';
                         this.disabled = true;
                     }
-                    location.reload();
+                    
                 };
                 draftCell.appendChild(draftButton);
             } catch (error) {
@@ -271,7 +275,7 @@ function createRoundBlock(roundNumber, maxMembers) {
     // Round label
     const roundLabel = document.createElement('div');
     roundLabel.className = 'round-label';
-    roundLabel.innerHTML = `<div class="rotate90">Round ${roundNumber}</div>`;
+    roundLabel.innerHTML = `<div class="rotate90">Teams</div>`;
     roundContainer.appendChild(roundLabel);
 
     // Create player blocks for the round
@@ -280,7 +284,7 @@ function createRoundBlock(roundNumber, maxMembers) {
         playerBlock.className = 'player-block';
 
         playerBlock.innerHTML = `
-            <div class="player-info">${ordinalSuffixOf(i)}</div>
+            <div class="player-info">Team ${i}</div>
             <div class="player-initials">XX</div>
             <div class="player-info2">Pending</div>
         `;
@@ -290,21 +294,7 @@ function createRoundBlock(roundNumber, maxMembers) {
     return roundContainer;
 }
 
-// Function to add ordinal suffix to numbers
-function ordinalSuffixOf(i) {
-    var j = i % 10,
-        k = i % 100;
-    if (j == 1 && k != 11) {
-        return i + "st";
-    }
-    if (j == 2 && k != 12) {
-        return i + "nd";
-    }
-    if (j == 3 && k != 13) {
-        return i + "rd";
-    }
-    return i + "th";
-}
+
 
 const draftRoundsElement = document.getElementById('draftRounds');
 
@@ -323,104 +313,29 @@ function initializeDraftPage() {
     playersButton.addEventListener('click', function() {
         playersTable.style.display = 'block';
         teamsTable.style.display = 'none';
+        playersButton.classList.add('btn-active');
+        teamsButton.classList.remove('btn-active');
     });
 
     teamsButton.addEventListener('click', function() {
         playersTable.style.display = 'none';
         teamsTable.style.display = 'block';
+        teamsButton.classList.add('btn-active');
+        playersButton.classList.remove('btn-active');
     });
 
-    // Create blocks for all rounds
-    for (let roundNumber = 1; roundNumber <= numberOfRounds; roundNumber++) {
-        const roundBlock = createRoundBlock(roundNumber, maxMembers);
+
+    document.getElementById('yourTeam').textContent = myTeamName;
+        const roundBlock = createRoundBlock(1, maxMembers);
         draftRoundsElement.appendChild(roundBlock);
-    } 
 }
 
-// Add event listeners
-//document.addEventListener('DOMContentLoaded', initializeDraftPage);
-refreshLeagueBtn.addEventListener('click', accountContentScript);
 
-
-function accountContentScript() {
-    sdk.sendMessage({
-      direction: "account-page-script",
-    });
-}
 
 
 sdk.addMessageListener((event) => {
     const messages = event.data.data;
-    console.log(messages);
-    if(flag==="account"){
-        sdk.sendMessage({
-            direction: "filter-page-script",
-            owner: "",
-            recipient: recipientPublicKey,
-        });
-        flag="refresh";
-    }else if(flag==="refresh"){
-        function sortMessagesByTimestamp(messages) {
-            // First filter the messages to include only those with function 'create' or 'join'
-            const filteredMessages = messages.filter(message => {
-                const asset = JSON.parse(message.asset.replace(/'/g, '"'));
-                const functionValue = asset.data.function;
-                return functionValue === 'create' || functionValue === 'join';
-            });
-            
-            // Then sort the filtered messages
-            return filteredMessages.sort((a, b) => {
-                const assetA = JSON.parse(a.asset.replace(/'/g, '"'));
-                const assetB = JSON.parse(b.asset.replace(/'/g, '"'));
-        
-                const timestampA = parseInt(assetA.data.timeStamp, 10);
-                const timestampB = parseInt(assetB.data.timeStamp, 10);
-        
-                return timestampA - timestampB; // Sorts in ascending order
-            });
-        }
-        
-        const sortedMessages = sortMessagesByTimestamp(messages);
-        sortedMessages.forEach((message, index) => {
-            try {
-                let correctedJson = message.asset.replace(/'/g, "\"").replace(/(\w+):/g, '"$1":');
-                const assetData = JSON.parse(correctedJson);
-                
-                if (assetData.data.leagueId === linkValue) {
-                    console.log(maxMembers);
-                    const teamName = assetData.data.team;
-                    //const playerNumber = (index % maxMembers) + 1; // Calculate player number
-                    localStorage.setItem("teamName",teamName);
-                    // Update this player in each round
-                    for (let roundNumber = 1; roundNumber <= 12; roundNumber++) {
-                        let playerNumber;
-                        // Determine if the round is a normal (1, 2, 3, ...) or reverse round (..., 3, 2, 1)
-                        const isReverseRound = roundNumber % 2 === 0;
-
-                        if (!isReverseRound) {
-                            // Normal round order
-                            playerNumber = (index % maxMembers) + 1;
-                        } else {
-                            // Reversed round order
-                            playerNumber = maxMembers - (index % maxMembers);
-                        }
-                        const playerBlockSelector = `.round-container:nth-of-type(${roundNumber}) .player-block:nth-child(${playerNumber + 1}) .player-info2`;
-                        const playerBlock = document.querySelector(playerBlockSelector);
-
-                        const playerBlockSelectorInitials = `.round-container:nth-of-type(${roundNumber}) .player-block:nth-child(${playerNumber + 1}) .player-initials`;
-                        const playerBlockInitials = document.querySelector(playerBlockSelectorInitials);
-
-                        if (playerBlock && playerBlockInitials) {
-                            playerBlock.textContent = teamName;
-                            playerBlockInitials.textContent = getInitials(teamName);
-                        }
-                    }
-                }
-            } catch (e) {
-                console.error("Error parsing message asset:", e);
-            }
-        });
-    }else if(flag==="drafted"){
+    if(flag==="drafted"){
         sdk.sendMessage({
             direction: "get-page-script",
             id: messages
@@ -465,19 +380,19 @@ sdk.addMessageListener((event) => {
         }
         
         const sortedMessages = sortMessagesByTimestamp(messages);
-        
+        localStorage.setItem("teamData", sortedMessages);
         populateTableWithAssets(sortedMessages);
     }
 });
 function getInitials(name) {
     return name.split(' ').map(part => part[0]).join('').toUpperCase();
 }
-function commitDraft(photo, name, id){
-    var team = localStorage.getItem("teamName");
+function commitDraft(photo, name, overall, club, id){
+
     var timeStamp = new Date().getTime();
     sdk.sendMessage({
         direction: "commit-page-script",
-        message: `"function":"draft", "photo": "${photo}", "team": "${team}","playerName": "${name}","playerId": "${id}", "timeStamp": "${timeStamp}"`,
+        message: `"function":"draft", "photo": "${photo}", "team": "${myTeamName}","playerName": "${name}", "overall": "${overall}", "club": "${club}", "playerId": "${id}", "timeStamp": "${timeStamp}"`,
         amount: 100,
         address: recipientPublicKey
     });
@@ -495,15 +410,15 @@ function displayMyTeam(){
 }
 function populateTableWithAssets(sortedMessages) {
     // Assuming assetTable is a predefined table element in your HTML
+    
     var assetTable = document.getElementById('myTeamTable');
 
     sortedMessages.forEach(function(assetData) {
         // Parse the asset data
         var parsedAssetData = JSON.parse(assetData.asset.replace(/'/g, '"'));
-        console.log(parsedAssetData);
         // Create a new row in the table for each asset
         var row = assetTable.insertRow();
-        var columns = ['Photo','Name'];
+        var columns = ['Photo','Name', 'Overall','Club'];
         columns.forEach(function(column) {
             var cell = row.insertCell();
 
@@ -514,11 +429,86 @@ function populateTableWithAssets(sortedMessages) {
                 cell.appendChild(img); // Add the img element to the table cell
               }
             if (column === 'Name') {
-                console.log(parsedAssetData.data.playerName);
                 cell.textContent = parsedAssetData.data.playerName; // Access the playerName property
+            }
+            if (column === 'Overall') {
+                cell.textContent = parsedAssetData.data.overall; // Access the playerName property
+            }
+            if (column === 'Club') {
+                cell.textContent = parsedAssetData.data.club; // Access the playerName property
             }
             
         });
+    });
+}
+
+function getTeamNames(messages){
+    console.log("I AM HERE");
+    function sortMessagesByTimestamp(messages) {
+        // First filter the messages to include only those with function 'create' or 'join'
+        const filteredMessages = messages.filter(message => {
+            const asset = JSON.parse(message.asset.replace(/'/g, '"'));
+            const functionValue = asset.data.function;
+            return functionValue === 'create' || functionValue === 'join';
+        });
+        
+        // Then sort the filtered messages
+        return filteredMessages.sort((a, b) => {
+            const assetA = JSON.parse(a.asset.replace(/'/g, '"'));
+            const assetB = JSON.parse(b.asset.replace(/'/g, '"'));
+    
+            const timestampA = parseInt(assetA.data.timeStamp, 10);
+            const timestampB = parseInt(assetB.data.timeStamp, 10);
+    
+            return timestampA - timestampB; // Sorts in ascending order
+        });
+    }
+    
+    const sortedMessages = sortMessagesByTimestamp(messages);
+    sortedMessages.forEach((message, index) => {
+        try {
+            let correctedJson = message.asset.replace(/'/g, "\"").replace(/(\w+):/g, '"$1":');
+            const assetData = JSON.parse(correctedJson);
+            
+            if (assetData.data.leagueId === linkValue) {
+                console.log(maxMembers);
+                const teamName = assetData.data.team;
+                
+                // Update this player in each round
+                for (let roundNumber = 1; roundNumber <= 12; roundNumber++) {
+                    let playerNumber;
+                    // Determine if the round is a normal (1, 2, 3, ...) or reverse round (..., 3, 2, 1)
+                    const isReverseRound = roundNumber % 2 === 0;
+
+                    if (!isReverseRound) {
+                        // Normal round order
+                        playerNumber = (index % maxMembers) + 1;
+                    } else {
+                        // Reversed round order
+                        playerNumber = maxMembers - (index % maxMembers);
+                    }
+                    const playerBlockSelector = `.round-container:nth-of-type(${roundNumber}) .player-block:nth-child(${playerNumber + 1}) .player-info2`;
+                    const playerBlock = document.querySelector(playerBlockSelector);
+
+                    const playerBlockSelectorInitials = `.round-container:nth-of-type(${roundNumber}) .player-block:nth-child(${playerNumber + 1}) .player-initials`;
+                    const playerBlockInitials = document.querySelector(playerBlockSelectorInitials);
+
+                    const teamBlockSelector = `.round-container:nth-of-type(${roundNumber}) .player-block:nth-child(${playerNumber + 1}) .player-info`;
+                    const teamBlock = document.querySelector(teamBlockSelector);
+
+                    if (playerBlock && playerBlockInitials) {
+                        playerBlock.textContent = teamName;
+                        if(teamName===myTeamName){
+                            teamBlock.style.backgroundColor = '#198754';
+                            teamBlock.style.color = '#fff';
+                        }
+                        playerBlockInitials.textContent = getInitials(teamName);
+                    }
+                }
+            }
+        } catch (e) {
+            console.error("Error parsing message asset:", e);
+        }
     });
 }
 

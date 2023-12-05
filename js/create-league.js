@@ -2,6 +2,11 @@ import ResilientSDK from 'https://cdn.resilientdb.com/resilient-sdk.js';
 
 const sdk = new ResilientSDK();
 let recipientPublicKey = null;
+var teamName = document.getElementById('teamName');
+var maxMembers = document.getElementById('maxMembers'); 
+var leagueName = document.getElementById('leagueName');
+var createLeagueBtn = document.getElementById("createLeagueBtn");
+createLeagueBtn.addEventListener("click", accountContentScript);
 
 function initializePublicKey() {
     var myHeaders = new Headers();
@@ -42,6 +47,7 @@ sdk.addMessageListener((event) => {
         if (recipientPublicKey) {
             localStorage.setItem("league", leagueName.value);
             localStorage.setItem("members", maxMembers.value);
+            localStorage.setItem("teamName", teamName.value);
             localStorage.setItem("leagueId", recipientPublicKey);
             var leagueId = recipientPublicKey+"?r="+message;
             ownerKey = message;
@@ -63,12 +69,6 @@ sdk.addMessageListener((event) => {
     }
 });
 
-var teamName = document.getElementById('teamName');
-var maxMembers = document.getElementById('maxMembers'); 
-var leagueName = document.getElementById('leagueName');
-var createLeagueBtn = document.getElementById("createLeagueBtn");
-
-createLeagueBtn.addEventListener("click", accountContentScript);
 
 function accountContentScript() {
     sdk.sendMessage({

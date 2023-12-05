@@ -23,6 +23,7 @@ sdk.addMessageListener((event) => {
         if (messageData.length > 0) {
             // Compare the publicKey of the first message with the leagueId.value
             if (messageData[0].publicKey === recipientPublicKey) {
+                localStorage.setItem("teamName", teamName.value);
                 var timeStamp = new Date().getTime();
                 sdk.sendMessage({      
                     direction: "commit-page-script",

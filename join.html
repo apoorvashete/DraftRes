@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>DraftRes - Premier League Fantasy Football Draft</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <meta name="theme-name" content="agen"/>
+        <link rel="stylesheet" href="plugins/bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" href="plugins/themify-icons/themify-icons.css">
+        <link href="css/style.css" rel="stylesheet">
+    </head>
+
+    <body style="overflow: hidden;">
+        <header class="navigation sticky-top" style="background-color: #07085d;">
+            <nav class="navbar navbar-expand-lg navbar-dark">
+              <a class="navbar-brand" href="index.html"><img src="css/icons/logo-transparent-png.png" width="160" alt="Egen"></a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+          
+              <div class="collapse navbar-collapse text-center" id="navigation">
+                <ul class="navbar-nav ml-auto">
+                  <li class="nav-item">
+                    <a class="nav-link" href="index.html">Home</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="https://github.com/swatisinghvi99/DraftRes" target="_blank">Github
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+          </header>
+
+        <div class="container" style="max-width: 2000px; padding: 0; margin: 0;">
+            <div class="row">
+                <div class="col-sm-6 col-md-6 col-lg-5 col-xl-5 d-flex align-items-center justify-content-center">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Join League</h4>
+                        </div>
+                        <div class="modal-body">
+                            <form role="form" id="joinLeagueForm">
+                                <div class="form-group">
+                                    <label for="leagueId">Enter league ID</label>
+                                    <input type="text" class="form-control" name="leagueId" id="leagueId" placeholder="League ID">
+                                </div>
+                                <div class="form-group">
+                                    <label for="teamName">Team Name</label>
+                                    <input type="text" class="form-control" name="teamName" id="teamName" placeholder="Super Team">
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" onclick="resetForm()">Cancel</button>
+                            <button type="submit" class="btn btn-success" id="joinLeagueBtn">Join league</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-6 col-lg-7 col-xl-7 d-flex align-items-center justify-content-center">
+                    <img src="images/backgrounds/stadium.png" alt="Your Image Description" class="img-fluid img-large-screen">
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function resetForm() {
+                document.getElementById('joinLeagueForm').reset();
+            }
+        </script>
+        <script src="https://cdn.resilientdb.com/resilient-sdk.js" type="module"></script>
+        <script src="js/join-league.js" type="module"></script>
+        <script src="plugins/jQuery/jquery.min.js"></script>
+        <script src="plugins/bootstrap/bootstrap.min.js"></script>
+        <script src="js/script.js"></script>
+    </body>
+</html>

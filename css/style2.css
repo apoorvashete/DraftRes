@@ -1,0 +1,176 @@
+body{
+    padding: 0 !important;
+}
+.scroll-container {
+    overflow-x: auto;
+    white-space: nowrap; 
+}
+
+.round-container {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: normal; 
+}
+
+.round-label {
+    width: 40px;
+    height: 120px;
+    display: inline-block;
+    background-color: rgb(43, 50, 84);
+    color: rgb(255, 255, 255);
+    text-align: center;
+    vertical-align: top;
+}
+
+.round-label div {
+    transform: rotate(270deg);
+    transform-origin: left top 0;
+    position: relative;
+    top: 130px;
+    right: 50px;
+    font-size: 18px;
+    left: 65px;
+}
+.rotate90 {
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    width: 120px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -60px; 
+    margin-top: -10px; 
+    font-size: 18px;
+}
+.player-block {
+    width: 185px;
+    height: 120px;
+    display: inline-block;
+    vertical-align: top;
+    background-color: rgb(255, 255, 255);
+    border-right: 1px solid rgb(228, 228, 228);
+}
+
+.player-block:last-child {
+    border-right: none;
+}
+
+.player-info {
+    text-align: center;
+    padding: 4px;
+    font-size: 14px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.player-info2 {
+    text-align: center;
+    padding: 4px;
+    font-size: 14px; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-initials {
+    width: 100%;
+    height: 60px;
+    line-height: 60px;
+    font-size: 26px;
+    font-weight: bold;
+    background-color: rgb(197, 199, 207);
+    color: rgb(255, 255, 255);
+    text-align: center;
+    border: 1px solid rgb(228, 228, 228);
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid black; 
+    margin: 10px 15px 25px 0px;
+    font-size: 15px;
+  }
+
+  th, td {
+    border: 0.5px solid black; /* Add a border to cells */
+    padding: 5px;
+    /* text-align: left; */
+  }
+
+  th {
+    background-color: #f2f2f2;
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+  }
+
+  /* Style the table header */
+  th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    margin-bottom: 6px; /* Add margin at the bottom of the headers */
+    text-align: center !important; /* Center the text within the headers */
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide any overflow */
+    text-overflow: ellipsis; /* Add ellipsis (...) for long text */
+
+  }
+
+ /* Style alternating rows with different background colors for better readability */
+tbody tr:nth-child(even) {
+    background-color: #dcdcdc;
+  }
+
+tr{
+    height: 2px;
+    text-align: center;
+
+}
+
+#pagination{
+    text-align: center;
+    margin-bottom: 20px;
+}
+#pagination span{
+    text-align: right;
+    margin-right: 360px;
+    margin-bottom: 10px;
+    display: inline-block;
+    color: black;
+    text-decoration: none;
+    margin: 0 4px;
+    border-color: transparent;
+    
+}
+.page-number.active {
+    background-color: #198754;
+  color: white;
+  border-color: transparent;
+}
+
+.search{
+    text-align: center;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    margin-left: 0px !important;
+    margin-right: 0px !important;
+}
+.navbar-brand{
+    margin-top: 2px;
+    margin-bottom: 15px;
+}
+#displayTeamBtn{
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+}
+#playerSearch{
+    width: 18%;
+    text-align: center;
+}
+.btn-default:focus, .btn-active {
+    background-color: rgb(43, 50, 84);
+    color: #fff;
+    outline: none; /* Optional: Removes the default focus outline */
+}

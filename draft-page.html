@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" type="text/css" class="__meteor-css__" href="https://d3ibm5lrns1d5x.cloudfront.net/a948b5d6d805f940e59d7e9c7c15240c7224aa16.css?meteor_css_resource=true">
+        <title>DraftRes - Premier League Fantasy Football Draft</title>
+        <link href="https://fonts.googleapis.com/css?family=Titillium+Web:300,400,400i,600|Oswald:500" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"/>
+        <link rel="stylesheet" href="plugins/themify-icons/themify-icons.css">
+        <link href="css/style2.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="row" style="background-color: #07085d;margin-bottom: 25px;">
+        <a class="navbar-brand" href="index.html"><img src="css/icons/logo-transparent-png.png" width="160" alt="Egen"></a>
+        </div>
+        <div class="row" style="margin-left: 0px; margin-right: 0px; margin-bottom: 30px;">
+            <div class="col-md-5" style="display: flex; justify-content: center;">
+                <div style="width: 100%; height: 120px;">
+                    <div class="col-lg-1 col-md-3" style="height: 100%; width: 30%; padding:25px 25px 30px 15px; background-color: rgb(255, 255, 255);">
+                        <div style="text-align: center;">
+                            <div style="color: rgb(43, 50, 84); font-size: 22px;" id="timer">
+                               Team Name:
+                                <span id="yourTeam"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scroll-container" style="width: 70%;" id="draftRounds"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-left: 0px; margin-right: 0px; ">
+            <div class="col-md-4" style="display: flex; justify-content: center;">
+                <div class="hidden-xs" style="margin-bottom: 10px; text-align: center; display: flex; justify-content: center;">
+                    <div class="btn-group btn-group-justified" role="group">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default btn-active" id="playersBtn">Players</button>
+                        </div>
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default" id="myTeamBtn">My Team</button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12" id="playersTable">
+            <div class="search">
+                <input type="text" id="playerSearch" placeholder="Search Player">
+            </div>
+        
+            <table id="assetTable">
+                <thead>
+                <tr>
+                    <th>Photo</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Nationality</th>
+                    <th>Overall</th>
+                    <th>Potential</th>
+                    <th>Club</th>
+                    <th>Preferred Foot</th>
+                    <th>Weak Foot</th>
+                    <th>Skill Moves</th>
+                    <th>Position</th>
+                    <th>Select</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Player data will be inserted here --> 
+                </tbody>
+            </table>
+
+            <div id="pagination">
+                <button id="prevButton">Previous</button>
+                <span id="pageNumberContainer"></span>
+                <button id="nextButton">Next</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6" style="display: flex; justify-content: center;" id="teamsTable">
+                <!-- Structure similar to players table -->
+                <table id="myTeamTable">
+                    <thead>
+                        <tr>
+                            <th>Photo</th>
+                            <th>Name</th>
+                            <th>Overall</th>
+                            <th>Club</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!-- Player data will be inserted here --> 
+                        </tbody>
+                </table>
+        
+                <!-- You can include pagination for teams table if needed -->
+            </div>
+        </div>
+       
+        <script src="https://cdn.resilientdb.com/resilient-sdk.js" type="module"></script>
+        <script src="js/draft-page.js" type="module"></script>
+    </body>
+</html>

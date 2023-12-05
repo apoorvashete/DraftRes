@@ -1,0 +1,175 @@
+
+body {
+    font-family: Titillium Web,Helvetica Neue,Helvetica,Arial,sans-serif;
+    margin: 0;
+    overflow: hidden;
+}    
+.nav-item a {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    margin-bottom: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.nav-item a.btn-success {
+    color: #fff;
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.nav-item a.btn-success:hover {
+    color: #fff;
+    background-color: #157347;
+    border-color: #157347;
+}
+
+.nav-item a.active {
+    color: #fff;
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.nav-item a.active:hover {
+    color: #fff;
+    background-color: #157347;
+    border-color: #157347;
+}
+.btn {
+    display: inline-block;
+    margin-bottom: 0;
+    font-weight: 400;
+    text-align: center;
+    vertical-align: middle;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-image: none;
+    white-space: nowrap;
+    padding: 6px 12px;
+    font-size: 15px;
+    line-height: 1.46666667;
+    border-radius: 4px;
+    user-select: none;
+}
+.btn-default {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+.btn-default:hover{
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
+.btn-primary {
+    color: #fff;
+    background-color: #198754;
+    border-color: #198754;
+    margin: 6px;
+}
+.btn-primary:hover{
+    color: #fff;
+    background-color: #156f45;
+    border-color: #156f45;
+}
+.modal-header {
+    padding: 15px;
+    border-bottom: 1px solid #e5e5e5;
+}
+.modal-content {
+    width: 60%;
+    margin: 0 auto;
+    position: relative;
+    background-color: #fff;
+    border: 1px solid #999;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 6px;
+    background-clip: padding-box;
+    outline: 0;
+    padding: 10px;
+}
+.modal-footer {
+    padding: 15px;
+    text-align: right;
+    border-top: 1px solid #e5e5e5;
+}
+.modal-title {
+    margin: 0;
+    line-height: 1.46666667;
+    font-weight: 600;
+    color: #333;
+}
+.form-control {
+    width: 100%;
+    height: 36px;
+    padding: 6px 12px;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    display: block;
+    font-size: 15px;
+    line-height: 1.46666667;
+    color: #676565;
+}
+.form-control:focus {
+    border-color: #198754;
+    outline: 0;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px #198754;
+    background-color: #fff;
+}
+input{
+    color: #333;
+}
+label {
+    display: inline-block;
+    max-width: 100%;
+    margin-bottom: 5px;
+    font-weight: 520;
+    color: #333;
+}
+.close{
+    color: #333;
+    background: #fff;
+    border: transparent;
+    font-size: 24px;
+}
+.form-group{
+    padding-top: 14px;
+    text-align: left;
+}
+.leagueText{
+    width: 90%;
+    margin: 0 auto;
+    position: relative;
+    border: 1px solid #999;
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 6px;
+    background-clip: padding-box;
+    outline: 0;
+    margin-top: 40px;
+    padding: 10px;
+    text-align: center;
+}
+.col-md-6 img {
+    height: 100%;
+    object-fit: cover;
+}
+.carousel-inner {
+    height: 400px;
+}
+.carousel-item img {
+    height: 100%;
+    object-fit: cover; 
+    width: 100%;
+}
+

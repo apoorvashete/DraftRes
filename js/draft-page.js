@@ -18,7 +18,7 @@ localStorage.setItem("displayteamName",myTeamName);
 var flag="account";
 var currentPage = 1;
 var rowsPerPage = 7;
-const numberOfRounds = 6;
+const numberOfRounds = 12;
 var myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 

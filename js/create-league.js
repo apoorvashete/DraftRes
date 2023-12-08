@@ -75,47 +75,47 @@ function accountContentScript() {
       direction: "account-page-script",
     });
 }
-    const url = 'http://cloud.draftres.pro/graphql';
-    const graphqlQuery = `
-        query {
-            getFilteredTransactions(filter: {
-                ownerPublicKey: "B2s9zdNwXXkuJR1nPGHG2eR8L6zVHiYhqP2e4UDy76sC"
-                recipientPublicKey: "GKKoh6vUaNVQd7fbkuuAWyRgYcdPbDLELVWfsNyRFbZj"
-            }) {
-                id
-                version
-                amount
-                metadata
-                operation
-                asset
-                publicKey
-                uri
-                type
-            }
+
+const url = 'http://cloud.draftres.pro/graphql';
+const graphqlQuery = `
+    query {
+        getFilteredTransactions(filter: {
+            ownerPublicKey: "B2s9zdNwXXkuJR1nPGHG2eR8L6zVHiYhqP2e4UDy76sC"
+            recipientPublicKey: "GKKoh6vUaNVQd7fbkuuAWyRgYcdPbDLELVWfsNyRFbZj"
+        }) {
+            id
+            version
+            amount
+            metadata
+            operation
+            asset
+            publicKey
+            uri
+            type
         }
-    `;
-  
-    const payload = {
-        query: graphqlQuery
-    };
-  
-    const headers = {
-        'Content-Type': 'application/json',
-        // Add any other headers as needed (e.g., authorization headers)
-    };
-  
-    fetch(url, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(payload)
-    })
-    .then(response => response.json())
-    .then(data => {
-        localStorage.setItem("data", JSON.stringify(data.data.getFilteredTransactions));
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+    }
+`;
+
+const payload = {
+    query: graphqlQuery
+};
+
+const headers = {
+    'Content-Type': 'application/json',
+};
+
+fetch(url, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(payload)
+})
+.then(response => response.json())
+.then(data => {
+    localStorage.setItem("data", JSON.stringify(data.data.getFilteredTransactions));
+})
+.catch(error => {
+    console.error('Error:', error);
+});
 
     
   

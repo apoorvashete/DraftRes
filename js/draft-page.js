@@ -2,15 +2,10 @@ import ResilientSDK from 'https://cdn.resilientdb.com/resilient-sdk.js';
 
 const sdk = new ResilientSDK();
 var league = localStorage.getItem("league");
-
-
 var playersData = JSON.parse(localStorage.getItem("data"));
-
 var assetTable = document.getElementById("assetTable").getElementsByTagName('tbody')[0];
-
-let hasPlayerSelected = false; //to track one chance in each round
-
-let selectedButtons = []; //to keep track of drafted buttons
+let hasPlayerSelected = false; 
+let selectedButtons = []; 
 let maxMembers = 0;
 let playerIDs = [];
 var currentPageUrl = window.location.href;
@@ -23,10 +18,10 @@ localStorage.setItem("displayteamName",myTeamName);
 var flag="account";
 var currentPage = 1;
 var rowsPerPage = 7;
+const numberOfRounds = 6;
 var myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
-// Modify the query with a placeholder
 var graphqlQuery = `
   query getFilteredTransactions($ownerPublicKey: String!, $recipientPublicKey: String!) {
     getFilteredTransactions(filter: {
@@ -46,7 +41,6 @@ var graphqlQuery = `
   }
 `;
 
-// Replace the placeholder in the query with the actual variable
 var graphql = JSON.stringify({
   query: graphqlQuery,
   variables: {
@@ -71,12 +65,10 @@ fetch("http://cloud.draftres.pro/graphql", requestOptions)
           .map(transaction => {
             let asset = JSON.parse(transaction.asset.replace(/'/g, "\""));
 
-            // For maxMembers
             if (asset.data && asset.data.function === 'create') {
                 return parseInt(asset.data.members);
             }
             
-            // For playerIDs
             if (asset.data && asset.data.function === 'draft' && asset.data.playerId) {
                 playerIDs.push(asset.data.playerId);
             }
@@ -85,39 +77,30 @@ fetch("http://cloud.draftres.pro/graphql", requestOptions)
           })
           .filter(members => members !== null);
 
-        // Update maxMembers
         maxMembers = memberValues.length > 0 ? memberValues[0] : 0;
-
         
         populateTable(playersData);
         displayPage(currentPage);
         initializeDraftPage();
         getTeamNames(transactions);
         
-        
       })
       .catch(error => console.log('error', error));
-
-const numberOfRounds = 12; // Set this to the desired number of rounds
-let currentPlayer = 1; // Start with the first player
-
 
 playersData.sort((a, b) => {
     const overallA = getOverall(a.asset);
     const overallB = getOverall(b.asset);
-    return overallB - overallA; // Sort in descending order
+    return overallB - overallA; // Sorts in descending order
 });
 
 function getOverall(assetString) {
     try {
         const assetData = JSON.parse(assetString.replace(/'/g, "\""));
-        return assetData.data.Overall || 0; // Return 0 if 'Overall' is not present in the asset data
+        return assetData.data.Overall || 0; 
     } catch (error) {
-        return 0; // Return 0 in case of an error
+        return 0; 
     }
 }
-
-
 
 function displayPage(page) {
     var start = (page - 1) * rowsPerPage;
@@ -161,19 +144,16 @@ function updatePageNumbers() {
         var pageButton = document.createElement('button');
         pageButton.textContent = i;
         pageButton.classList.add('page-number');
-
         if (i === currentPage) {
             pageButton.classList.add('active');
         }
-
         pageButton.addEventListener('click', function() {
             displayPage(i);
         });
-
         pageNumberContainer.appendChild(pageButton);
     }
 }
-function populateTable(dataToDisplay) { // Assuming playerIDs is passed as an argument
+function populateTable(dataToDisplay) { 
     while (assetTable.rows.length > 0) {
         assetTable.deleteRow(0);
     }
@@ -200,25 +180,28 @@ function populateTable(dataToDisplay) { // Assuming playerIDs is passed as an ar
                 draftButton.textContent = 'Draft';
                 draftButton.classList.add('btn', 'btn-success');
                 draftButton.style.backgroundColor = '#198754';
-                draftButton.id = index; // Set button ID to index
+                draftButton.style.borderColor = 'rgb(25, 135, 84)'
+                draftButton.id = index; 
 
                 if (playerIDs.includes(index.toString())) {
-                    // If index is in the playerIDs array, disable the button and change its color
-                    draftButton.style.backgroundColor = 'red';
+                    draftButton.classList.remove('btn-success');
+                    draftButton.classList.add('btn-danger');
+                    draftButton.style.removeProperty("background-color");
+                    draftButton.style.removeProperty("border-color");
                     draftButton.disabled = true;
                 }
                 
-                if(maxMembers===2 && playerIDs.length===24){
+                if(playerIDs.length===maxMembers*numberOfRounds){
                     window.location.href = `display-results.html?link=${linkValue}`;
                 }
                 draftButton.onclick = function() {
                     if (!hasPlayerSelected) {
                         
                         commitDraft(assetData.data.Photo, assetData.data.Name, assetData.data.Overall, assetData.data.Club, index);
-                        hasPlayerSelected = true; // Set flag to true as player has made a selection
-                        selectedButtons.push(this.id); // Add the button's ID to the selected list
+                        hasPlayerSelected = true;
+                        selectedButtons.push(this.id);
 
-                        //change button color
+                        //disable button if player is selected
                         this.style.backgroundColor = 'red';
                         this.disabled = true;
                     }
@@ -249,9 +232,6 @@ function searchPlayers() {
 
 searchInput.addEventListener('input', searchPlayers);
 
-// populateTable(playersData);
-// displayPage(currentPage);
-
 document.getElementById('prevButton').addEventListener('click', function() {
     if (currentPage > 1) {
         displayPage(currentPage - 1);
@@ -275,7 +255,7 @@ function createRoundBlock(roundNumber, maxMembers) {
     // Round label
     const roundLabel = document.createElement('div');
     roundLabel.className = 'round-label';
-    roundLabel.innerHTML = `<div class="rotate90">Teams</div>`;
+    roundLabel.innerHTML = `<div class="rotate90">Round ${roundNumber}</div>`;
     roundContainer.appendChild(roundLabel);
 
     // Create player blocks for the round
@@ -284,7 +264,7 @@ function createRoundBlock(roundNumber, maxMembers) {
         playerBlock.className = 'player-block';
 
         playerBlock.innerHTML = `
-            <div class="player-info">Team ${i}</div>
+            <div class="player-info">Pick ${i}</div>
             <div class="player-initials">XX</div>
             <div class="player-info2">Pending</div>
         `;
@@ -298,17 +278,14 @@ function createRoundBlock(roundNumber, maxMembers) {
 
 const draftRoundsElement = document.getElementById('draftRounds');
 
- // Start with the first round
-
 function initializeDraftPage() {
     const playersButton = document.getElementById('playersBtn');
-    const teamsButton = document.getElementById('myTeamBtn'); // assuming first button is for players
+    const teamsButton = document.getElementById('myTeamBtn');
     const playersTable = document.getElementById('playersTable');
-    const teamsTable = document.getElementById('teamsTable'); // assuming you have an element with this ID for teams
+    const teamsTable = document.getElementById('teamsTable'); 
 
-    // Set default visibility
-    playersTable.style.display = 'block'; // show players table by default
-    teamsTable.style.display = 'none'; // hide teams table by default
+    playersTable.style.display = 'block'; 
+    teamsTable.style.display = 'none';
 
     playersButton.addEventListener('click', function() {
         playersTable.style.display = 'block';
@@ -324,14 +301,13 @@ function initializeDraftPage() {
         playersButton.classList.remove('btn-active');
     });
 
-
     document.getElementById('yourTeam').textContent = myTeamName;
-        const roundBlock = createRoundBlock(1, maxMembers);
+    document.getElementById('leagueName').textContent = league;
+    for (let roundNumber = 1; roundNumber <= numberOfRounds; roundNumber++) {
+        const roundBlock = createRoundBlock(roundNumber, maxMembers);
         draftRoundsElement.appendChild(roundBlock);
+    }   
 }
-
-
-
 
 sdk.addMessageListener((event) => {
     const messages = event.data.data;
@@ -340,12 +316,8 @@ sdk.addMessageListener((event) => {
             direction: "get-page-script",
             id: messages
         });
-        
         flag = "disable";
-        location.reload();
     }else if(flag==="disable"){
-        console.log(messages);
-        
         var disabledData = JSON.parse(messages.asset.replace(/'/g, '"'));
         var buttonId = disabledData.data.playerId;
         var btn = document.getElementById(buttonId);
@@ -360,14 +332,13 @@ sdk.addMessageListener((event) => {
         flag="display";
     }else if(flag==="display"){
         function sortMessagesByTimestamp(messages) {
-            // First filter the messages to include only those with function 'create' or 'join'
+            //Filter the data to include only those with function equal to 'create' or 'join'
             const filteredMessages = messages.filter(message => {
                 const asset = JSON.parse(message.asset.replace(/'/g, '"'));
                 const functionValue = asset.data.function;
                 return functionValue === 'draft';
             });
             
-            // Then sort the filtered messages
             return filteredMessages.sort((a, b) => {
                 const assetA = JSON.parse(a.asset.replace(/'/g, '"'));
                 const assetB = JSON.parse(b.asset.replace(/'/g, '"'));
@@ -409,7 +380,6 @@ function displayMyTeam(){
     flag="check";
 }
 function populateTableWithAssets(sortedMessages) {
-    // Assuming assetTable is a predefined table element in your HTML
     
     var assetTable = document.getElementById('myTeamTable');
 
@@ -425,17 +395,17 @@ function populateTableWithAssets(sortedMessages) {
             if (column === 'Photo') {
                 // If the column is 'Photo', create an img element
                 var img = document.createElement('img');
-                img.src = parsedAssetData.data.photo; // Set the src attribute to the image URL
-                cell.appendChild(img); // Add the img element to the table cell
+                img.src = parsedAssetData.data.photo; 
+                cell.appendChild(img);
               }
             if (column === 'Name') {
-                cell.textContent = parsedAssetData.data.playerName; // Access the playerName property
+                cell.textContent = parsedAssetData.data.playerName;
             }
             if (column === 'Overall') {
-                cell.textContent = parsedAssetData.data.overall; // Access the playerName property
+                cell.textContent = parsedAssetData.data.overall; 
             }
             if (column === 'Club') {
-                cell.textContent = parsedAssetData.data.club; // Access the playerName property
+                cell.textContent = parsedAssetData.data.club; 
             }
             
         });
@@ -443,7 +413,6 @@ function populateTableWithAssets(sortedMessages) {
 }
 
 function getTeamNames(messages){
-    console.log("I AM HERE");
     function sortMessagesByTimestamp(messages) {
         // First filter the messages to include only those with function 'create' or 'join'
         const filteredMessages = messages.filter(message => {
@@ -471,13 +440,10 @@ function getTeamNames(messages){
             const assetData = JSON.parse(correctedJson);
             
             if (assetData.data.leagueId === linkValue) {
-                console.log(maxMembers);
                 const teamName = assetData.data.team;
                 
-                // Update this player in each round
                 for (let roundNumber = 1; roundNumber <= 12; roundNumber++) {
                     let playerNumber;
-                    // Determine if the round is a normal (1, 2, 3, ...) or reverse round (..., 3, 2, 1)
                     const isReverseRound = roundNumber % 2 === 0;
 
                     if (!isReverseRound) {

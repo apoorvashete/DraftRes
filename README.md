@@ -1,7 +1,9 @@
 # DraftRes
 DraftRes is a Draft Fantasy Soccer that uses ResilientDB for storing and retrieving data. DraftRes' draft room offers a unique and engaging team selection experience. Accessed with valid credentials, teams follow a serpentine draft sequence (A-B-C-D-D-C-B-A) ensuring a balanced and dynamic selection process. Selections are broadcasted in real-time, keeping all teams informed about player affiliations. This continues until all selections are complete, creating an exciting and efficient drafting environment.
 
-The site is live at http://draftres.resilientdb.com/
+The site is live at http://draftres.resilientdb.com/  
+
+This project is licensed under the Apache 2.0 License - see the LICENSE file for details.
 
 ## Prerequisites (also available on https://blog.resilientdb.com/2023/09/21/ResVault.html)
 

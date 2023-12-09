@@ -56,7 +56,7 @@ var requestOptions = {
   redirect: 'follow'
 };
 
-fetch("http://cloud.draftres.pro/graphql", requestOptions)
+fetch("https://cloud.resilientdb.com/graphql", requestOptions)
       .then(response => response.json())
       .then(data => {
         let transactions = data.data.getFilteredTransactions;

@@ -24,7 +24,7 @@ function initializePublicKey() {
         redirect: 'follow'
     };
 
-    return fetch("http://cloud.draftres.pro/graphql", requestOptions)
+    return fetch("https://cloud.resilientdb.com/graphql", requestOptions)
         .then(response => response.json())
         .then(data => {
             if (data && data.data && data.data.generateKeys) {
@@ -76,7 +76,7 @@ function accountContentScript() {
     });
 }
 
-const url = 'http://cloud.draftres.pro/graphql';
+const url = 'https://cloud.resilientdb.com/graphql';
 const graphqlQuery = `
     query {
         getFilteredTransactions(filter: {

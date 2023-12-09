@@ -29,3 +29,12 @@ npm run build
 - Make sure developer mode is enabled using the toggle button.
 - Finally, load the extension by clicking on load unpacked button and then select the build folder that was created in the previous step.
 - Now you can open the wallet from the extension button and start using it. Make sure to keep the wallet persistent when sending transactions (by keeping opening inspect element)
+
+### Contributors
+- Swati Singhvi (svsinghvi@ucdavis.edu)
+- Chris Jackson Fernandez (cjfernandez@ucdavis.edu)
+- Sofiya Shaikh (szshaikh@ucdavis.edu)
+- Apoorva Shete (apshete@ucdavis.edu)
+- Saisha Shetty (spshetty@ucdavis.edu)
+
+Project done under the guidance of Professor Mohammad Sadoghi (mo.sadoghi@expolab.org) at University of California, Davis
